@@ -1,2 +1,2 @@
 all:
-	g++ hello_rdma.cc -o hello_rdma
+	g++ hello_rdma.cc -o hello_rdma -libverbs
