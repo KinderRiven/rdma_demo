@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-17 13:33:00
+ * @LastEditTime: 2021-06-17 13:33:45
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -72,6 +72,6 @@ int main(int argc, char** argv)
     ibv_query_device(_ib.ctx, &_ib.dev_attr);
 
     // 为RDMA设备上下文创建完成队列
-    ib_res.cq = ibv_create_cq(ib_res.ctx, ib_res.dev_attr.max_cqe, NULL, NULL, 0);
+    _ib.cq = ibv_create_cq(_ib.ctx, _ib.dev_attr.max_cqe, NULL, NULL, 0);
     return 0;
 }
