@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-17 12:46:04
+ * @LastEditTime: 2021-06-17 12:47:10
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -56,6 +56,6 @@ int main(int argc, char** argv)
     ibv_query_port(_ib.ctx, 1, &_ib.port_attr);
 
     _ib.ib_buf_size = 2UL * 1024 * 1024;
-    _ib.ib_buf = (char *)memalign(_ib.ib_buf_size);
+    _ib.ib_buf = (char *)memalign(4096, _ib.ib_buf_size);
     return 0;
 }
