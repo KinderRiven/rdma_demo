@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-17 14:47:20
+ * @LastEditTime: 2021-06-17 14:47:43
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -92,7 +92,7 @@ int main(int argc, char** argv)
     qp_init_attr.qp_type = IBV_QPT_RC;
 
     _ib.qp = (struct ibv_qp**)calloc(_ib.num_qps, sizeof(struct ibv_qp*));
-    for (i = 0; i < _ib.num_qps; i++) {
+    for (int i = 0; i < _ib.num_qps; i++) {
         _ib.qp[i] = ibv_create_qp(_ib.pd, &qp_init_attr);
     }
 
