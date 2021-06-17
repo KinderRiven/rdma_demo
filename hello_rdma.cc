@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-17 13:33:45
+ * @LastEditTime: 2021-06-17 14:39:37
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -36,7 +36,7 @@ int main(int argc, char** argv)
 
     // 获得设备列表
     dev_list = ibv_get_device_list(&num_dev);
-    if ((*dev_list) == NULL) {
+    if (num_dev == 0) {
         printf("Failed to get ib device list! [%d]\n", num_dev);
         exit(1);
     } else {
@@ -73,5 +73,12 @@ int main(int argc, char** argv)
 
     // 为RDMA设备上下文创建完成队列
     _ib.cq = ibv_create_cq(_ib.ctx, _ib.dev_attr.max_cqe, NULL, NULL, 0);
+
+    /* create srq */
+    struct ibv_srq_init_attr srq_init_attr = {
+        .attr.max_wr = _ib.dev_attr.max_srq_wr,
+        .attr.max_sge = 1,
+    };
+    _ib.srq = ibv_create_srq(_ib.pd, &srq_init_attr);
     return 0;
 }
