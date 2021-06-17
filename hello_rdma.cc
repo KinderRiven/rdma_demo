@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-17 14:41:13
+ * @LastEditTime: 2021-06-17 14:47:20
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -79,5 +79,22 @@ int main(int argc, char** argv)
     srq_init_attr.attr.max_wr = _ib.dev_attr.max_srq_wr;
     srq_init_attr.attr.max_sge = 1;
     _ib.srq = ibv_create_srq(_ib.pd, &srq_init_attr);
+
+    /* create qp */
+    struct ibv_qp_init_attr qp_init_attr;
+    qp_init_attr.send_cq = _ib.cq; // send completion queue
+    qp_init_attr.recv_cq = _ib.cq; // recv completion queue
+    qp_init_attr.srq = _ib.srq; // shared recv queue
+    qp_init_attr.cap.max_send_wr = _ib.dev_attr.max_qp_wr;
+    qp_init_attr.cap.max_recv_wr = _ib.dev_attr.max_qp_wr;
+    qp_init_attr.cap.max_send_sge = 1;
+    qp_init_attr.cap.max_recv_sge = 1;
+    qp_init_attr.qp_type = IBV_QPT_RC;
+
+    _ib.qp = (struct ibv_qp**)calloc(_ib.num_qps, sizeof(struct ibv_qp*));
+    for (i = 0; i < _ib.num_qps; i++) {
+        _ib.qp[i] = ibv_create_qp(_ib.pd, &qp_init_attr);
+    }
+
     return 0;
 }
