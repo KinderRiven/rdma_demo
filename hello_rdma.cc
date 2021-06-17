@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-17 11:27:47
+ * @LastEditTime: 2021-06-17 11:29:19
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -30,11 +30,11 @@ int main(int argc, char** argv)
 
     struct ibv_device** dev_list = NULL;
     dev_list = ibv_get_device_list(NULL);
-    if (dev_list == NULL) {
+    if ((*dev_list) == NULL) {
         printf("Failed to get ib device list!\n");
         exit(1);
     } else {
-        printf("Get ib device list! 0x%x\n", *dev_list);
+        printf("Get ib device list! [0x%x]\n", *dev_list);
     }
 
     IBRes _ib;
