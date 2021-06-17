@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-17 11:29:58
+ * @LastEditTime: 2021-06-17 12:45:29
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -46,5 +46,14 @@ int main(int argc, char** argv)
         printf("Failed to open ib device!\n");
         exit(2);
     }
+
+    // 创建一个protection domain。protection domain可以看作是一个内存保护单位，在内存区域和队列直接建立一个关联关系，防止未授权的访问。
+    _ib.pd = ibv_alloc_pd(_ib.ctx);
+
+    // 返回RDMA设备上下文（context）的端口的属性。
+    ibv_query_port(_ib.ctx, 1, &_ib.port_attr);
+
+    _ib.ib_buf_size = 2UL * 1024 * 1024;
+    _ib.ib_buf = (char *)memalign(_ib.ib_buf_size);
     return 0;
 }
