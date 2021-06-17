@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-17 11:18:43
+ * @LastEditTime: 2021-06-17 11:22:57
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -19,7 +19,6 @@ struct IBRes {
     struct ibv_srq* srq;
     struct ibv_port_attr port_attr;
     struct ibv_device_attr dev_attr;
-
     int num_qps;
     char* ib_buf;
     size_t ib_buf_size;
@@ -33,11 +32,17 @@ int main(int argc, char** argv)
     dev_list = ibv_get_device_list(NULL);
     if (dev_list == NULL) {
         printf("Failed to get ib device list!\n");
+        exit(1);
     } else {
         printf("Get ib device list!\n");
     }
 
     IBRes _ib;
     memset(&_ib, 0, sizeof(_ib));
+    _ib.ctx = ibv_open_device(*dev_list);
+    if (_ib.ctx == NULL) {
+        printf("Failed to open ib device!\n");
+        exit(2);
+    }
     return 0;
 }
