@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-17 11:05:21
+ * @LastEditTime: 2021-06-17 11:16:54
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -28,5 +28,14 @@ struct IBRes {
 int main(int argc, char** argv)
 {
     printf("Hello RDMA!\n");
+
+    struct ibv_device** dev_list = NULL;
+    dev_list = ibv_get_device_list(NULL);
+    if (dev_list == NULL) {
+        printf("dev_list is nullptr!\n");
+    }
+
+    IBRes _ib;
+    memset(&_ib, 0, sizeof(_ib));
     return 0;
 }
