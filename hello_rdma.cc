@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-17 14:39:37
+ * @LastEditTime: 2021-06-17 14:40:51
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -75,10 +75,9 @@ int main(int argc, char** argv)
     _ib.cq = ibv_create_cq(_ib.ctx, _ib.dev_attr.max_cqe, NULL, NULL, 0);
 
     /* create srq */
-    struct ibv_srq_init_attr srq_init_attr = {
-        .attr.max_wr = _ib.dev_attr.max_srq_wr,
-        .attr.max_sge = 1,
-    };
+    struct ibv_srq_init_attr srq_init_attr;
+    srq_init_attr.attr.max_wr = _ib.dev_attr.max_srq_wr;
+    srq_init_attrattr.max_sge = 1;
     _ib.srq = ibv_create_srq(_ib.pd, &srq_init_attr);
     return 0;
 }
