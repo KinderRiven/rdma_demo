@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-17 12:47:10
+ * @LastEditTime: 2021-06-17 12:47:40
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -43,7 +43,7 @@ int main(int argc, char** argv)
 
     IBRes _ib;
     memset(&_ib, 0, sizeof(_ib));
-    _ib.ctx = ibv_open_device(*dev);
+    _ib.ctx = ibv_open_device(dev);
     if (_ib.ctx == NULL) {
         printf("Failed to open ib device!\n");
         exit(2);
