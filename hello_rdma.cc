@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-17 11:22:57
+ * @LastEditTime: 2021-06-17 11:27:47
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -34,7 +34,7 @@ int main(int argc, char** argv)
         printf("Failed to get ib device list!\n");
         exit(1);
     } else {
-        printf("Get ib device list!\n");
+        printf("Get ib device list! 0x%x\n", *dev_list);
     }
 
     IBRes _ib;
