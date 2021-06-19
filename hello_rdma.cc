@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-19 20:54:36
+ * @LastEditTime: 2021-06-19 20:55:19
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -22,8 +22,10 @@ public:
     struct ibv_srq* srq;
     struct ibv_port_attr port_attr;
     struct ibv_device_attr dev_attr;
-    int num_qps;
     char* ib_buf;
+
+public: // need initlizate
+    int num_qps;
     size_t ib_buf_size;
 };
 
@@ -195,7 +197,6 @@ static void create_qpair(rdma_context_t* context)
 static void register_memory_region(rdma_context_t* context)
 {
     // 注册一段内存区域的函数
-    context->ib_buf_size = 2UL * 1024 * 1024;
     context->ib_buf = (char*)memalign(4096, context->ib_buf_size); // 申请一段内存
     if (context->ib_buf == NULL) {
         printf("memalign failed.\n");
@@ -227,6 +228,7 @@ int main(int argc, char** argv)
 {
     rdma_context_t _ctx;
     _ctx.num_qps = 4;
+    _ctx.ib_buf_size = 2UL * 1024 * 1024;
 
     memset(&_ctx, 0, sizeof(_ctx));
     open_device(&_ctx);
