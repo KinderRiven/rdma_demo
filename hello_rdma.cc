@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-19 20:51:47
+ * @LastEditTime: 2021-06-19 20:53:25
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -153,7 +153,7 @@ static void create_qpair(rdma_context_t* context)
         printf("ibv_alloc_pd ok.\n");
     }
 
-    // 为RDMA设备上下文创建完成队列
+    // create completion queue (cq)
     context->cq = ibv_create_cq(context->ctx, context->dev_attr.max_cqe, NULL, NULL, 0);
     if (context->cq == NULL) {
         printf("ibv_create_cq failed.\n");
@@ -161,6 +161,12 @@ static void create_qpair(rdma_context_t* context)
     } else {
         printf("ibv_create_cq ok.\n");
     }
+
+    // create shared received queue (srq)
+    struct ibv_srq_init_attr srq_init_attr;
+    srq_init_attr.attr.max_wr = context->dev_attr.max_srq_wr;
+    srq_init_attr.attr.max_sge = 1;
+    context->srq = ibv_create_srq(context->pd, &srq_init_attr);
 
     struct ibv_qp_init_attr qp_init_attr;
     qp_init_attr.send_cq = context->cq;
@@ -208,11 +214,6 @@ static void register_memory_region(rdma_context_t* context)
 
 static void do_recv(rdma_context_t* context)
 {
-    // create shared received queue
-    struct ibv_srq_init_attr srq_init_attr;
-    srq_init_attr.attr.max_wr = context->dev_attr.max_srq_wr;
-    srq_init_attr.attr.max_sge = 1;
-    context->srq = ibv_create_srq(context->pd, &srq_init_attr);
 }
 
 static void do_send()
