@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-19 20:16:44
+ * @LastEditTime: 2021-06-19 20:17:13
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -123,7 +123,7 @@ static void open_device(rdma_context_t* context)
     //           uint8_t                 phys_port_cnt;          /* Number of physical ports */
     //   };
     ibv_query_device(context->ctx, &context->dev_attr);
-    printf("MAX_MR:%d\n", context->dev_attr.max_mr);
+    printf("MAX_MR:%dMB\n", context->dev_attr.max_mr / (1024 * 1024));
 }
 
 static void create_qpair(rdma_context_t* context)
