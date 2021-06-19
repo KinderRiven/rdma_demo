@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-19 20:53:25
+ * @LastEditTime: 2021-06-19 20:54:05
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -167,6 +167,11 @@ static void create_qpair(rdma_context_t* context)
     srq_init_attr.attr.max_wr = context->dev_attr.max_srq_wr;
     srq_init_attr.attr.max_sge = 1;
     context->srq = ibv_create_srq(context->pd, &srq_init_attr);
+    if (context->srq == NULL) {
+        printf("ibv_create_srq failed.\n");
+    } else {
+        printf("ibv_create_srq ok.\n");
+    }
 
     struct ibv_qp_init_attr qp_init_attr;
     qp_init_attr.send_cq = context->cq;
