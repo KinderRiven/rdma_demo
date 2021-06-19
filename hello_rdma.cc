@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-19 21:01:41
+ * @LastEditTime: 2021-06-19 21:02:25
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -232,7 +232,7 @@ int main(int argc, char** argv)
     _ctx.ib_buf_size = 2UL * 1024 * 1024;
 
     open_device(&_ctx);
-    register_memory_region(&_ctx);
     create_qpair(&_ctx);
+    register_memory_region(&_ctx);
     return 0;
 }
