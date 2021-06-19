@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-19 20:21:40
+ * @LastEditTime: 2021-06-19 20:24:39
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -39,18 +39,20 @@ static void open_device(rdma_context_t* context)
     // 1.1 获得RDMA列表
     _dev_list = ibv_get_device_list(&_num_dev);
     if (_num_dev == 0) {
-        printf("Failed to get RDMA device list.\n");
+        printf("ibv_get_device_list failed.\n");
         exit(1);
     } else {
-        printf("Succeed to RDMA device list.[%d]\n", _num_dev);
+        printf("ibv_get_device_list ok.[%d]\n", _num_dev);
         _dev = *_dev_list; // used first
     }
 
     // 1.2 打开RDMA设备
     context->ctx = ibv_open_device(_dev);
     if (context->ctx == NULL) {
-        printf("Failed to open RDMA device.\n");
+        printf("ibv_open_device failed.\n");
         exit(2);
+    } else {
+        printf("ibv_open_device ok.\n");
     }
 
     // 1.3 返回RDMA设备的端口的属性。
@@ -79,7 +81,11 @@ static void open_device(rdma_context_t* context)
     //            uint16_t                port_cap_flags2;/* Port capabilities */
     // };
     _res = ibv_query_port(context->ctx, 1, &context->port_attr);
-    printf("ibv_query_port = %d\n", _res);
+    if (!_res) {
+        printf("ibv_query_port failed.\n");
+    } else {
+        printf("ibv_query_port ok.\n");
+    }
 
     // 1.4 查询设备获得设备属性
     // struct ibv_device_attr {
@@ -125,7 +131,11 @@ static void open_device(rdma_context_t* context)
     //           uint8_t                 phys_port_cnt;          /* Number of physical ports */
     // };
     _res = ibv_query_device(context->ctx, &context->dev_attr);
-    printf("ibv_query_device = %d\n", _res);
+    if (!_res) {
+        printf("ibv_query_device failed.\n");
+    } else {
+        printf("ibv_query_device ok.\n");
+    }
     // printf("MAX_NUM_MR:%dMB\n", context->dev_attr.max_mr / (1024 * 1024));
 }
 
@@ -134,9 +144,17 @@ static void create_qpair(rdma_context_t* context)
     // 创建一个保护域，protection domain。
     // protection domain可以看作是一个内存保护单位，在内存区域和队列直接建立一个关联关系，防止未授权的访问。
     context->pd = ibv_alloc_pd(context->ctx);
+    if (context->pd == NULL) {
+        printf("ibv_alloc_pd failed.\n");
+        exit(1);
+    }
 
     // 为RDMA设备上下文创建完成队列
     context->cq = ibv_create_cq(context->ctx, context->dev_attr.max_cqe, NULL, NULL, 0);
+    if (context->cq == NULL) {
+        printf("ibv_create_cq failed.\n");
+        exit(1);
+    }
 }
 
 static void register_memory_region(rdma_context_t* context)
