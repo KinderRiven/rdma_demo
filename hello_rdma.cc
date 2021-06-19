@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-19 20:26:01
+ * @LastEditTime: 2021-06-19 20:26:59
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -147,6 +147,8 @@ static void create_qpair(rdma_context_t* context)
     if (context->pd == NULL) {
         printf("ibv_alloc_pd failed.\n");
         exit(1);
+    } else {
+        printf("ibv_alloc_pd ok.\n");
     }
 
     // 为RDMA设备上下文创建完成队列
@@ -154,6 +156,8 @@ static void create_qpair(rdma_context_t* context)
     if (context->cq == NULL) {
         printf("ibv_create_cq failed.\n");
         exit(1);
+    } else {
+        printf("ibv_create_cq ok.\n");
     }
 }
 
@@ -201,7 +205,7 @@ int main(int argc, char** argv)
 {
     rdma_context_t _ctx;
     memset(&_ctx, 0, sizeof(_ctx));
-
     open_device(&_ctx);
+    create_qpair(&_ctx);
     return 0;
 }
