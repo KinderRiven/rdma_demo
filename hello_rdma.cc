@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-19 19:47:57
+ * @LastEditTime: 2021-06-19 20:04:57
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -41,7 +41,7 @@ static void open_device(rdma_context_t* context)
         printf("Failed to get RDMA device list.\n");
         exit(1);
     } else {
-        printf("Succeed to RDMA device list.[%d]\n", num_dev);
+        printf("Succeed to RDMA device list.[%d]\n", _num_dev);
         _dev = *_dev_list; // used first
     }
 
@@ -53,7 +53,7 @@ static void open_device(rdma_context_t* context)
     }
 
     // 1.3 返回RDMA设备的端口的属性。
-    ibv_query_port(context->ctx, 1, &context->ctx.port_attr);
+    ibv_query_port(context->ctx, 1, &context->port_attr);
 
     // 1.4 查询设备获得设备属性
     ibv_query_device(context->ctx, &context->dev_attr);
@@ -113,5 +113,6 @@ int main(int argc, char** argv)
 {
     rdma_context_t _ctx;
     memset(&_ctx, 0, sizeof(_ctx));
+    open_device(_ctx);
     return 0;
 }
