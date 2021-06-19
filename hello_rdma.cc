@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-19 20:24:39
+ * @LastEditTime: 2021-06-19 20:26:01
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -81,7 +81,7 @@ static void open_device(rdma_context_t* context)
     //            uint16_t                port_cap_flags2;/* Port capabilities */
     // };
     _res = ibv_query_port(context->ctx, 1, &context->port_attr);
-    if (!_res) {
+    if (_res) {
         printf("ibv_query_port failed.\n");
     } else {
         printf("ibv_query_port ok.\n");
@@ -131,7 +131,7 @@ static void open_device(rdma_context_t* context)
     //           uint8_t                 phys_port_cnt;          /* Number of physical ports */
     // };
     _res = ibv_query_device(context->ctx, &context->dev_attr);
-    if (!_res) {
+    if (_res) {
         printf("ibv_query_device failed.\n");
     } else {
         printf("ibv_query_device ok.\n");
