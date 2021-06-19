@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-19 20:26:59
+ * @LastEditTime: 2021-06-19 20:28:47
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -166,9 +166,22 @@ static void register_memory_region(rdma_context_t* context)
     // 注册一段内存区域的函数
     context->ib_buf_size = 2UL * 1024 * 1024;
     context->ib_buf = (char*)memalign(4096, context->ib_buf_size); // 申请一段内存
+    if (context->ib_buf == NULL) {
+        printf("memalign failed.\n");
+        exit(1);
+    } else {
+        printf("memalign ok.\n");
+    }
+
     context->mr = ibv_reg_mr(context->pd, (void*)context->ib_buf,
         context->ib_buf_size,
         IBV_ACCESS_LOCAL_WRITE | IBV_ACCESS_REMOTE_READ | IBV_ACCESS_REMOTE_WRITE);
+    if (context->mr == NULL) {
+        printf("ibv_reg_mr failed.\n");
+        exit(1);
+    } else {
+        printf("ibv_reg_mr ok.\n");
+    }
 }
 
 static void do_recv()
@@ -207,5 +220,6 @@ int main(int argc, char** argv)
     memset(&_ctx, 0, sizeof(_ctx));
     open_device(&_ctx);
     create_qpair(&_ctx);
+    register_memory_region(&_ctx);
     return 0;
 }
