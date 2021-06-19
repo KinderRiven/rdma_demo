@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-19 20:17:13
+ * @LastEditTime: 2021-06-19 20:21:40
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -31,6 +31,7 @@ rdma_context_t g_context;
 
 static void open_device(rdma_context_t* context)
 {
+    int _res;
     int _num_dev = 0;
     struct ibv_device* _dev = NULL;
     struct ibv_device** _dev_list = NULL;
@@ -76,8 +77,9 @@ static void open_device(rdma_context_t* context)
     //            uint8_t                 link_layer;     /* link layer protocol of the port */
     //            uint8_t                 flags;          /* Port flags */
     //            uint16_t                port_cap_flags2;/* Port capabilities */
-    //    };
-    ibv_query_port(context->ctx, 1, &context->port_attr);
+    // };
+    _res = ibv_query_port(context->ctx, 1, &context->port_attr);
+    printf("ibv_query_port = %d\n", _res);
 
     // 1.4 查询设备获得设备属性
     // struct ibv_device_attr {
@@ -121,9 +123,10 @@ static void open_device(rdma_context_t* context)
     //           uint16_t                max_pkeys;              /* Maximum number of partitions */
     //           uint8_t                 local_ca_ack_delay;     /* Local CA ack delay */
     //           uint8_t                 phys_port_cnt;          /* Number of physical ports */
-    //   };
-    ibv_query_device(context->ctx, &context->dev_attr);
-    printf("MAX_MR:%dMB\n", context->dev_attr.max_mr / (1024 * 1024));
+    // };
+    _res = ibv_query_device(context->ctx, &context->dev_attr);
+    printf("ibv_query_device = %d\n", _res);
+    // printf("MAX_NUM_MR:%dMB\n", context->dev_attr.max_mr / (1024 * 1024));
 }
 
 static void create_qpair(rdma_context_t* context)
