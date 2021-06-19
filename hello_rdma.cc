@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-19 20:54:05
+ * @LastEditTime: 2021-06-19 20:54:36
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -141,9 +141,7 @@ static void open_device(rdma_context_t* context)
 
 static void create_qpair(rdma_context_t* context)
 {
-    context->num_qps = 4;
-
-    // 创建一个保护域，protection domain。
+    // create protection domain (pd)
     // protection domain可以看作是一个内存保护单位，在内存区域和队列直接建立一个关联关系，防止未授权的访问。
     context->pd = ibv_alloc_pd(context->ctx);
     if (context->pd == NULL) {
@@ -228,6 +226,8 @@ static void do_send()
 int main(int argc, char** argv)
 {
     rdma_context_t _ctx;
+    _ctx.num_qps = 4;
+
     memset(&_ctx, 0, sizeof(_ctx));
     open_device(&_ctx);
     create_qpair(&_ctx);
