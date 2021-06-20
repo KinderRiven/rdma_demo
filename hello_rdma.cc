@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-20 15:04:27
+ * @LastEditTime: 2021-06-20 15:06:27
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -265,7 +265,7 @@ static void register_memory_region(rdma_context_t* context)
 size_t sock_read(int sock_fd, void* buffer, size_t len)
 {
     size_t nr, tot_read;
-    char* buf = buffer; // avoid pointer arithmetic on void pointer
+    char* buf = (char*)buffer; // avoid pointer arithmetic on void pointer
     tot_read = 0;
 
     while (len != 0 && (nr = read(sock_fd, buf, len)) != 0) {
@@ -287,7 +287,7 @@ size_t sock_read(int sock_fd, void* buffer, size_t len)
 size_t sock_write(int sock_fd, void* buffer, size_t len)
 {
     size_t nw, tot_written;
-    char* buf = buffer; // avoid pointer arithmetic on void pointer
+    char* buf = (char*)buffer; // avoid pointer arithmetic on void pointer
 
     for (tot_written = 0; tot_written < len;) {
         nw = write(sock_fd, buf, len - tot_written);
