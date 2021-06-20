@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-20 16:58:21
+ * @LastEditTime: 2021-06-20 20:05:43
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -25,7 +25,7 @@ public:
     struct ibv_pd* pd;
     struct ibv_mr* mr;
     struct ibv_cq* cq;
-    struct ibv_qp** qp;
+    struct ibv_qp* qp[128];
     struct ibv_srq* srq;
     struct ibv_port_attr port_attr;
     struct ibv_device_attr dev_attr;
@@ -221,7 +221,6 @@ static void create_qpair(rdma_context_t* context)
     qp_init_attr.cap.max_recv_sge = 1;
     qp_init_attr.qp_type = IBV_QPT_RC;
 
-    context->qp = (struct ibv_qp**)calloc(context->num_qps, sizeof(struct ibv_qp*));
     for (int i = 0; i < context->num_qps; i++) {
         context->qp[i] = ibv_create_qp(context->pd, &qp_init_attr);
         if (context->qp[i] == NULL) {
@@ -367,17 +366,18 @@ static void connect(rdma_context_t* context)
     printf("|--accept ok.[%d]\n", peer_sockfd);
 
     // recv
-    qp_info_t qp_info;
-    size_t sz = sock_read(peer_sockfd, &qp_info, sizeof(qp_info));
-    printf("[%zu/%zu]\n", sz, sizeof(qp_info));
-    printf("[lid:%d][qp_num:%d][rank:%d]\n", qp_info.lid, qp_info.qp_num, qp_info.rank);
+    qp_info_t remote_qp_info;
+    size_t sz = sock_read(peer_sockfd, &remote_qp_info, sizeof(remote_qp_info));
+    printf("[%zu/%zu]\n", sz, sizeof(remote_qp_info));
+    printf("[lid:%d][qp_num:%d][rank:%d]\n", remote_qp_info.lid, remote_qp_info.qp_num, remote_qp_info.rank);
 
     // send
-    qp_info.lid = context->port_attr.lid;
-    qp_info.qp_num = context->num_qps;
-    qp_info.rank = 1;
-    sz = sock_write(sock_fd, &qp_info, sizeof(qp_info));
-    printf("[%zu/%zu]\n", sz, sizeof(qp_info));
+    qp_info_t local_qp_info;
+    local_qp_info.lid = context->port_attr.lid;
+    local_qp_info.qp_num = context->num_qps;
+    local_qp_info.rank = 1;
+    sz = sock_write(sock_fd, &local_qp_info, sizeof(local_qp_info));
+    printf("[%zu/%zu]\n", sz, sizeof(local_qp_info));
 }
 
 static void register_recv_wq(rdma_context_t* context)
