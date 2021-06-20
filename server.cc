@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-20 16:44:47
+ * @LastEditTime: 2021-06-20 16:58:21
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -366,11 +366,13 @@ static void connect(rdma_context_t* context)
     peer_sockfd = accept(sock_fd, (struct sockaddr*)&peer_addr, &peer_addr_len);
     printf("|--accept ok.[%d]\n", peer_sockfd);
 
+    // recv
     qp_info_t qp_info;
     size_t sz = sock_read(peer_sockfd, &qp_info, sizeof(qp_info));
     printf("[%zu/%zu]\n", sz, sizeof(qp_info));
     printf("[lid:%d][qp_num:%d][rank:%d]\n", qp_info.lid, qp_info.qp_num, qp_info.rank);
 
+    // send
     qp_info.lid = context->port_attr.lid;
     qp_info.qp_num = context->num_qps;
     qp_info.rank = 1;
