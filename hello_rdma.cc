@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-20 12:10:04
+ * @LastEditTime: 2021-06-20 12:10:12
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -140,7 +140,7 @@ static void open_device(rdma_context_t* context)
         printf("ibv_query_device ok.\n");
         printf("[VERSION:%d]\n", context->dev_attr.hw_ver);
         printf("[MAX_NUM_CQ:%d][MAX_CQE:%d]\n", context->dev_attr.max_cq, context->dev_attr.max_cqe);
-        printf("[MAX_QP_WR:%d]", context->dev_attr.max_qp_wr);
+        printf("[MAX_QP_WR:%d]\n", context->dev_attr.max_qp_wr);
         printf("[MAX_NUM_MR:%dMB][MR_SIZE:%lluGB]\n", context->dev_attr.max_mr / (1024 * 1024), context->dev_attr.max_mr_size / (1024UL * 1024 * 1024));
     }
 }
