@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-19 21:02:25
+ * @LastEditTime: 2021-06-20 10:37:40
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -228,7 +228,7 @@ int main(int argc, char** argv)
 {
     rdma_context_t _ctx;
     memset(&_ctx, 0, sizeof(_ctx));
-    _ctx.num_qps = 4;
+    _ctx.num_qps = 1;
     _ctx.ib_buf_size = 2UL * 1024 * 1024;
 
     open_device(&_ctx);
