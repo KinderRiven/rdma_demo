@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-20 14:03:06
+ * @LastEditTime: 2021-06-20 14:26:22
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -251,6 +251,7 @@ static void register_memory_region(rdma_context_t* context)
 static void connect(rdma_context_t* context)
 {
     printf("|connect.\n");
+    /////////////////// bind /////////////////////
     struct addrinfo hints;
     struct addrinfo *result, *rp;
     int sock_fd = -1, ret = 0;
@@ -275,13 +276,27 @@ static void connect(rdma_context_t* context)
         }
         ret = bind(sock_fd, rp->ai_addr, rp->ai_addrlen);
         if (ret == 0) {
-            /* bind success */
             break;
         }
         close(sock_fd);
         sock_fd = -1;
     }
     freeaddrinfo(result);
+
+    /////////////////// listen /////////////////////
+    ret = listen(sock_fd, 5);
+    if (!ret) {
+        printf("|--listen ok.\n");
+    } else {
+        printf("|--listen failed.\n");
+        exit(1);
+    }
+
+    /////////////////// accept /////////////////////
+    int peer_sockfd
+    struct sockaddr_in peer_addr;
+    socklen_t peer_addr_len = sizeof(struct sockaddr_in);
+    peer_sockfd[i] = accept(sock_fd, (struct sockaddr*)&peer_addr, &peer_addr_len);
 }
 
 static void register_recv_wq(rdma_context_t* context)
