@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-20 15:06:27
+ * @LastEditTime: 2021-06-20 15:13:01
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -397,10 +397,6 @@ static void register_recv_wq(rdma_context_t* context)
     }
 }
 
-static void do_send()
-{
-}
-
 int main(int argc, char** argv)
 {
     rdma_context_t _ctx;
@@ -411,7 +407,7 @@ int main(int argc, char** argv)
     open_device(&_ctx);
     create_qpair(&_ctx);
     register_memory_region(&_ctx);
-    // connect(&_ctx);
+    connect(&_ctx);
     register_recv_wq(&_ctx);
     return 0;
 }
