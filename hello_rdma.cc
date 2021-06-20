@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-20 12:10:12
+ * @LastEditTime: 2021-06-20 12:10:52
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -203,8 +203,8 @@ static void create_qpair(rdma_context_t* context)
     qp_init_attr.srq = context->srq;
     qp_init_attr.cap.max_send_wr = context->dev_attr.max_qp_wr;
     qp_init_attr.cap.max_recv_wr = context->dev_attr.max_qp_wr;
-    qp_init_attr.cap.max_send_sge = 1;
-    qp_init_attr.cap.max_recv_sge = 1;
+    qp_init_attr.cap.max_send_sge = 128;
+    qp_init_attr.cap.max_recv_sge = 128;
     qp_init_attr.qp_type = IBV_QPT_RC;
 
     printf("%s\n", strerror(errno));
