@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-20 15:22:04
+ * @LastEditTime: 2021-06-20 15:38:28
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -33,6 +33,13 @@ public:
 public: // need initlizate
     int num_qps;
     size_t ib_buf_size;
+};
+
+struct qp_info_t {
+    uint32_t lid;
+    uint32_t qp_num;
+    uint32_t rank;
+    uint32_t unused_;
 };
 
 rdma_context_t g_context;
@@ -262,6 +269,8 @@ static void register_memory_region(rdma_context_t* context)
 }
 
 ////////////////////// socket ///////////////////////
+//          使用传统的TCP/IP链接去交换信息             //
+/////////////////////////////////////////////////////
 size_t sock_read(int sock_fd, void* buffer, size_t len)
 {
     size_t nr, tot_read;
@@ -356,6 +365,10 @@ static void connect(rdma_context_t* context)
     socklen_t peer_addr_len = sizeof(struct sockaddr_in);
     peer_sockfd = accept(sock_fd, (struct sockaddr*)&peer_addr, &peer_addr_len);
     printf("|--accept ok.[%d]\n", peer_sockfd);
+
+    qp_info_t qp_info;
+    sock_read(sock_fd, &qp_info, sizeof(qp_info));
+    printf("[lid:%d][qp_num:%d][rank:%d]\n", qp_info.lid, qp_info.qp_num, qp_info.rank);
 }
 
 static void register_recv_wq(rdma_context_t* context)
@@ -398,6 +411,9 @@ static void register_recv_wq(rdma_context_t* context)
     }
 }
 
+////////////////////// socket ///////////////////////
+//                     MAIN                        //
+/////////////////////////////////////////////////////
 int main(int argc, char** argv)
 {
     rdma_context_t _ctx;
