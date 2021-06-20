@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-20 20:12:28
+ * @LastEditTime: 2021-06-20 20:15:05
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -416,7 +416,7 @@ static void connect(rdma_context_t* context)
     sz = sock_read(sock_fd, &remote_qp_info, sizeof(remote_qp_info));
     printf("[%zu/%zu]\n", sz, sizeof(remote_qp_info));
     printf("[lid:%d][qp_num:%d][rank:%d]\n", remote_qp_info.lid, remote_qp_info.qp_num, remote_qp_info.rank);
-    
+
     modify_qp_to_rts(context->qp[0], 1, remote_qp_info.lid);
 }
 
@@ -424,7 +424,7 @@ int main(int argc, char** argv)
 {
     rdma_context_t _ctx;
     memset(&_ctx, 0, sizeof(_ctx));
-    _ctx.num_qps = 4;
+    _ctx.num_qps = 1;
     _ctx.ib_buf_size = 2UL * 1024 * 1024;
 
     open_device(&_ctx);
