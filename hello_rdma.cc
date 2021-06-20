@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-20 13:17:23
+ * @LastEditTime: 2021-06-20 13:18:23
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -253,8 +253,8 @@ static void register_recv_wq(rdma_context_t* context)
     };
     */
     struct ibv_sge list;
-    list.addr = context->ib_buf;
-    list.length = req_size;
+    list.addr = (uint64_t)context->ib_buf;
+    list.length = context->ib_buf_size;
     list.lkey = context->mr->lkey;
 
     /*
