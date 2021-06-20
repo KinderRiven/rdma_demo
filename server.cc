@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-20 15:13:01
+ * @LastEditTime: 2021-06-20 15:22:04
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -360,6 +360,7 @@ static void connect(rdma_context_t* context)
 
 static void register_recv_wq(rdma_context_t* context)
 {
+    printf("|register_recv_wq.\n");
     int ret = 0;
     struct ibv_recv_wr* bad_recv_wr;
 
@@ -390,9 +391,9 @@ static void register_recv_wq(rdma_context_t* context)
 
     ret = ibv_post_srq_recv(context->srq, &recv_wr, &bad_recv_wr);
     if (!ret) {
-        printf("ibv_post_srq_recv ok.\n");
+        printf("|--ibv_post_srq_recv ok.\n");
     } else {
-        printf("ibv_post_srq_recv failed.\n");
+        printf("|--ibv_post_srq_recv failed.\n");
         exit(1);
     }
 }
@@ -408,6 +409,6 @@ int main(int argc, char** argv)
     create_qpair(&_ctx);
     register_memory_region(&_ctx);
     connect(&_ctx);
-    register_recv_wq(&_ctx);
+    // register_recv_wq(&_ctx);
     return 0;
 }
