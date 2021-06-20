@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-20 16:43:51
+ * @LastEditTime: 2021-06-20 16:44:47
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -371,7 +371,7 @@ static void connect(rdma_context_t* context)
     printf("[%zu/%zu]\n", sz, sizeof(qp_info));
     printf("[lid:%d][qp_num:%d][rank:%d]\n", qp_info.lid, qp_info.qp_num, qp_info.rank);
 
-    qp_info.lid = context->port_addr.lid;
+    qp_info.lid = context->port_attr.lid;
     qp_info.qp_num = context->num_qps;
     qp_info.rank = 1;
     sz = sock_write(sock_fd, &qp_info, sizeof(qp_info));
