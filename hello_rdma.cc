@@ -1,17 +1,22 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-20 13:18:23
+ * @LastEditTime: 2021-06-20 14:02:09
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
  */
 
+#include <arpa/inet.h>
 #include <errno.h>
 #include <infiniband/verbs.h>
 #include <malloc.h>
+#include <netdb.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <sys/socket.h>
+#include <unistd.h>
 
 struct rdma_context_t {
 public:
@@ -34,6 +39,7 @@ rdma_context_t g_context;
 
 static void open_device(rdma_context_t* context)
 {
+    printf("|open_device.\n");
     int _res;
     int _num_dev = 0;
     struct ibv_device* _dev = NULL;
@@ -42,20 +48,20 @@ static void open_device(rdma_context_t* context)
     // 1.1 获得RDMA列表
     _dev_list = ibv_get_device_list(&_num_dev);
     if (_num_dev == 0) {
-        printf("ibv_get_device_list failed.\n");
+        printf("|--ibv_get_device_list failed.\n");
         exit(1);
     } else {
-        printf("ibv_get_device_list ok.[%d]\n", _num_dev);
+        printf("|--ibv_get_device_list ok.[%d]\n", _num_dev);
         _dev = *_dev_list; // used first
     }
 
     // 1.2 打开RDMA设备
     context->ctx = ibv_open_device(_dev);
     if (context->ctx == NULL) {
-        printf("ibv_open_device failed.\n");
+        printf("|--ibv_open_device failed.\n");
         exit(2);
     } else {
-        printf("ibv_open_device ok.\n");
+        printf("|--ibv_open_device ok.\n");
     }
 
     // 1.3 返回RDMA设备的端口的属性。
@@ -85,9 +91,9 @@ static void open_device(rdma_context_t* context)
     // };
     _res = ibv_query_port(context->ctx, 1, &context->port_attr);
     if (_res) {
-        printf("ibv_query_port failed.\n");
+        printf("|--ibv_query_port failed.\n");
     } else {
-        printf("ibv_query_port ok.\n");
+        printf("|--ibv_query_port ok.\n");
     }
 
     // 1.4 查询设备获得设备属性
@@ -135,35 +141,36 @@ static void open_device(rdma_context_t* context)
     // };
     _res = ibv_query_device(context->ctx, &context->dev_attr);
     if (_res) {
-        printf("ibv_query_device failed.\n");
+        printf("|--ibv_query_device failed.\n");
     } else {
-        printf("ibv_query_device ok.\n");
-        printf("[VERSION:%d]\n", context->dev_attr.hw_ver);
-        printf("[MAX_NUM_CQ:%d][MAX_CQE:%d]\n", context->dev_attr.max_cq, context->dev_attr.max_cqe);
-        printf("[MAX_QP_WR:%d]\n", context->dev_attr.max_qp_wr);
-        printf("[MAX_NUM_MR:%dMB][MR_SIZE:%lluGB]\n", context->dev_attr.max_mr / (1024 * 1024), context->dev_attr.max_mr_size / (1024UL * 1024 * 1024));
+        printf("|--ibv_query_device ok.\n");
+        printf("|----[VERSION:%d]\n", context->dev_attr.hw_ver);
+        printf("|----[MAX_NUM_CQ:%d][MAX_CQE:%d]\n", context->dev_attr.max_cq, context->dev_attr.max_cqe);
+        printf("|----[MAX_QP_WR:%d]\n", context->dev_attr.max_qp_wr);
+        printf("|----[MAX_NUM_MR:%dMB][MR_SIZE:%lluGB]\n", context->dev_attr.max_mr / (1024 * 1024), context->dev_attr.max_mr_size / (1024UL * 1024 * 1024));
     }
 }
 
 static void create_qpair(rdma_context_t* context)
 {
+    printf("|create_qpair.\n");
     // create protection domain (pd)
     // protection domain可以看作是一个内存保护单位，在内存区域和队列直接建立一个关联关系，防止未授权的访问。
     context->pd = ibv_alloc_pd(context->ctx);
     if (context->pd == NULL) {
-        printf("ibv_alloc_pd failed.\n");
+        printf("|--ibv_alloc_pd failed.\n");
         exit(1);
     } else {
-        printf("ibv_alloc_pd ok.\n");
+        printf("|--ibv_alloc_pd ok.\n");
     }
 
     // create completion queue (cq)
     context->cq = ibv_create_cq(context->ctx, context->dev_attr.max_cqe, NULL, NULL, 0);
     if (context->cq == NULL) {
-        printf("ibv_create_cq failed.\n");
+        printf("|--ibv_create_cq failed.\n");
         exit(1);
     } else {
-        printf("ibv_create_cq ok.\n");
+        printf("|--ibv_create_cq ok.\n");
     }
 
     // create shared received queue (srq)
@@ -172,9 +179,9 @@ static void create_qpair(rdma_context_t* context)
     srq_init_attr.attr.max_sge = 1;
     context->srq = ibv_create_srq(context->pd, &srq_init_attr);
     if (context->srq == NULL) {
-        printf("ibv_create_srq failed.\n");
+        printf("|--ibv_create_srq failed.\n");
     } else {
-        printf("ibv_create_srq ok.\n");
+        printf("|--ibv_create_srq ok.\n");
     }
 
     struct ibv_qp_init_attr qp_init_attr;
@@ -211,33 +218,71 @@ static void create_qpair(rdma_context_t* context)
     for (int i = 0; i < context->num_qps; i++) {
         context->qp[i] = ibv_create_qp(context->pd, &qp_init_attr);
         if (context->qp[i] == NULL) {
-            printf("ibv_create_qp failed.[%s]\n", strerror(errno));
+            printf("|--ibv_create_qp failed.[%s]\n", strerror(errno));
         } else {
-            printf("ibv_create_qp ok.[%d]\n", i);
+            printf("|--ibv_create_qp ok.[%d]\n", i);
         }
     }
 }
 
 static void register_memory_region(rdma_context_t* context)
 {
+    printf("|register_memory_regio.\n");
     // 注册一段内存区域的函数
     context->ib_buf = (char*)memalign(4096, context->ib_buf_size); // 申请一段内存
     if (context->ib_buf == NULL) {
-        printf("memalign failed.\n");
+        printf("|--memalign failed.\n");
         exit(1);
     } else {
-        printf("memalign ok.\n");
+        printf("|--memalign ok.\n");
     }
 
     context->mr = ibv_reg_mr(context->pd, (void*)context->ib_buf,
         context->ib_buf_size,
         IBV_ACCESS_LOCAL_WRITE | IBV_ACCESS_REMOTE_READ | IBV_ACCESS_REMOTE_WRITE);
     if (context->mr == NULL) {
-        printf("ibv_reg_mr failed.\n");
+        printf("|--ibv_reg_mr failed.\n");
         exit(1);
     } else {
-        printf("ibv_reg_mr ok.\n");
+        printf("|--ibv_reg_mr ok.\n");
     }
+}
+
+static void connect(rdma_context_t* context)
+{
+    printf("|connect.\n");
+    struct addrinfo hints;
+    struct addrinfo *result, *rp;
+    int sock_fd = -1, ret = 0;
+
+    memset(&hints, 0, sizeof(struct addrinfo));
+    hints.ai_socktype = SOCK_STREAM;
+    hints.ai_family = AF_UNSPEC;
+    hints.ai_flags = AI_PASSIVE;
+
+    ret = getaddrinfo(NULL, "4396", &hints, &result);
+    if (!ret) {
+        printf("|--getaddrinfo ok.\n");
+    } else {
+        printf("|--getaddrinfo failed.\n");
+        exit(1);
+    }
+
+    for (rp = result; rp != NULL; rp = rp->ai_next) {
+        sock_fd = socket(rp->ai_family, rp->ai_socktype, rp->ai_protocol);
+        if (sock_fd < 0) {
+            continue;
+        }
+        ret = bind(sock_fd, rp->ai_addr, rp->ai_addrlen);
+        if (ret == 0) {
+            /* bind success */
+            break;
+        }
+        close(sock_fd);
+        sock_fd = -1;
+    }
+    freeaddrinfo(result);
+    return sock_fd;
 }
 
 static void register_recv_wq(rdma_context_t* context)
@@ -293,6 +338,7 @@ int main(int argc, char** argv)
     open_device(&_ctx);
     create_qpair(&_ctx);
     register_memory_region(&_ctx);
+    connect(&_ctx);
     register_recv_wq(&_ctx);
     return 0;
 }
