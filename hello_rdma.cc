@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-20 10:44:46
+ * @LastEditTime: 2021-06-20 10:45:28
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -184,6 +184,7 @@ static void create_qpair(rdma_context_t* context)
     qp_init_attr.cap.max_recv_sge = 1;
     qp_init_attr.qp_type = IBV_QPT_RC;
 
+    printf("%s\n", strerror(errno));
     context->qp = (struct ibv_qp**)calloc(context->num_qps, sizeof(struct ibv_qp*));
     for (int i = 0; i < context->num_qps; i++) {
         context->qp[i] = ibv_create_qp(context->pd, &qp_init_attr);
