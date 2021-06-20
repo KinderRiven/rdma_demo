@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-20 14:02:09
+ * @LastEditTime: 2021-06-20 14:03:06
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -282,7 +282,6 @@ static void connect(rdma_context_t* context)
         sock_fd = -1;
     }
     freeaddrinfo(result);
-    return sock_fd;
 }
 
 static void register_recv_wq(rdma_context_t* context)
