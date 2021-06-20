@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-20 15:43:03
+ * @LastEditTime: 2021-06-20 15:44:10
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -367,7 +367,7 @@ static void connect(rdma_context_t* context)
     printf("|--accept ok.[%d]\n", peer_sockfd);
 
     qp_info_t qp_info;
-    size_t sz = sock_read(sock_fd, &qp_info, sizeof(qp_info));
+    size_t sz = sock_read(peer_sockfd, &qp_info, sizeof(qp_info));
     printf("[%zu/%zu]\n", sz, sizeof(qp_info));
     printf("[lid:%d][qp_num:%d][rank:%d]\n", qp_info.lid, qp_info.qp_num, qp_info.rank);
 }
