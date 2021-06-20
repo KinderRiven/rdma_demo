@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-20 14:28:41
+ * @LastEditTime: 2021-06-20 14:59:15
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -237,6 +237,17 @@ static void register_memory_region(rdma_context_t* context)
         printf("|--memalign ok.\n");
     }
 
+    /*
+    struct ibv_mr {
+        struct ibv_context  *context;
+        struct ibv_pd	    *pd;
+        void		        *addr;
+        size_t			    length;
+        uint32_t		    handle;
+        uint32_t		    lkey;
+        uint32_t		    rkey;
+    };
+    */
     context->mr = ibv_reg_mr(context->pd, (void*)context->ib_buf,
         context->ib_buf_size,
         IBV_ACCESS_LOCAL_WRITE | IBV_ACCESS_REMOTE_READ | IBV_ACCESS_REMOTE_WRITE);
@@ -245,7 +256,54 @@ static void register_memory_region(rdma_context_t* context)
         exit(1);
     } else {
         printf("|--ibv_reg_mr ok.\n");
+        printf("|----[lkey:%d][rkey:%d]\n", context->mr->lkey, context->mr->rkey);
+        printf("|----[addr:%llx][length:%zu]\n", (uint64_t)context->mr->addr, context->mr->length);
     }
+}
+
+////////////////////// socket ///////////////////////
+size_t sock_read(int sock_fd, void* buffer, size_t len)
+{
+    ssize_t nr, tot_read;
+    char* buf = buffer; // avoid pointer arithmetic on void pointer
+    tot_read = 0;
+
+    while (len != 0 && (nr = read(sock_fd, buf, len)) != 0) {
+        if (nr < 0) {
+            if (errno == EINTR) {
+                continue;
+            } else {
+                return -1;
+            }
+        }
+        len -= nr;
+        buf += nr;
+        tot_read += nr;
+    }
+
+    return tot_read;
+}
+
+size_t sock_write(int sock_fd, void* buffer, size_t len)
+{
+    ssize_t nw, tot_written;
+    const char* buf = buffer; // avoid pointer arithmetic on void pointer
+
+    for (tot_written = 0; tot_written < len;) {
+        nw = write(sock_fd, buf, len - tot_written);
+
+        if (nw <= 0) {
+            if (nw == -1 && errno == EINTR) {
+                continue;
+            } else {
+                return -1;
+            }
+        }
+
+        tot_written += nw;
+        buf += nw;
+    }
+    return tot_written;
 }
 
 static void connect(rdma_context_t* context)
@@ -353,7 +411,7 @@ int main(int argc, char** argv)
     open_device(&_ctx);
     create_qpair(&_ctx);
     register_memory_region(&_ctx);
-    connect(&_ctx);
+    // connect(&_ctx);
     register_recv_wq(&_ctx);
     return 0;
 }
