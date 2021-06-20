@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-20 20:20:07
+ * @LastEditTime: 2021-06-20 20:20:58
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -436,15 +436,12 @@ static void connect(rdma_context_t* context)
     printf("[%zu/%zu]\n", sz, sizeof(remote_qp_info));
     printf("[lid:%d][qp_num:%d][rank:%d]\n", remote_qp_info.lid, remote_qp_info.qp_num, remote_qp_info.rank);
 
-    int stop;
-    scanf("%d", &stop);
-
     // send
     qp_info_t local_qp_info;
     local_qp_info.lid = context->port_attr.lid;
     local_qp_info.qp_num = context->num_qps;
     local_qp_info.rank = 1;
-    sz = sock_write(sock_fd, &local_qp_info, sizeof(local_qp_info));
+    sz = sock_write(peer_sockfd, &local_qp_info, sizeof(local_qp_info));
     printf("[%zu/%zu]\n", sz, sizeof(local_qp_info));
 
     modify_qp_to_rts(context->qp[0], 1, remote_qp_info.lid);
