@@ -1,17 +1,17 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-20 10:39:35
+ * @LastEditTime: 2021-06-20 10:43:54
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
  */
 
+#include <errno.h>
 #include <infiniband/verbs.h>
 #include <malloc.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <errno.h>
 
 struct rdma_context_t {
 public:
@@ -188,7 +188,7 @@ static void create_qpair(rdma_context_t* context)
     for (int i = 0; i < context->num_qps; i++) {
         context->qp[i] = ibv_create_qp(context->pd, &qp_init_attr);
         if (context->qp[i] == NULL) {
-            printf("ibv_create_qp failed.[%d]\n", errno);
+            printf("ibv_create_qp failed.[%s]\n", stderr(errno));
         } else {
             printf("ibv_create_qp ok.[%d]\n", i);
         }
