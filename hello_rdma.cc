@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-20 12:11:24
+ * @LastEditTime: 2021-06-20 13:17:23
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -15,6 +15,7 @@
 
 struct rdma_context_t {
 public:
+    char* ib_buf;
     struct ibv_context* ctx;
     struct ibv_pd* pd;
     struct ibv_mr* mr;
@@ -23,7 +24,6 @@ public:
     struct ibv_srq* srq;
     struct ibv_port_attr port_attr;
     struct ibv_device_attr dev_attr;
-    char* ib_buf;
 
 public: // need initlizate
     int num_qps;
@@ -201,13 +201,12 @@ static void create_qpair(rdma_context_t* context)
     qp_init_attr.send_cq = context->cq;
     qp_init_attr.recv_cq = context->cq;
     qp_init_attr.srq = context->srq;
-    qp_init_attr.cap.max_send_wr = 128; // context->dev_attr.max_qp_wr;
-    qp_init_attr.cap.max_recv_wr = 128; // context->dev_attr.max_qp_wr;
+    qp_init_attr.cap.max_send_wr = 128;
+    qp_init_attr.cap.max_recv_wr = 128;
     qp_init_attr.cap.max_send_sge = 1;
     qp_init_attr.cap.max_recv_sge = 1;
     qp_init_attr.qp_type = IBV_QPT_RC;
 
-    printf("%s\n", strerror(errno));
     context->qp = (struct ibv_qp**)calloc(context->num_qps, sizeof(struct ibv_qp*));
     for (int i = 0; i < context->num_qps; i++) {
         context->qp[i] = ibv_create_qp(context->pd, &qp_init_attr);
@@ -241,8 +240,43 @@ static void register_memory_region(rdma_context_t* context)
     }
 }
 
-static void do_recv(rdma_context_t* context)
+static void register_recv_wq(rdma_context_t* context)
 {
+    int ret = 0;
+    struct ibv_recv_wr* bad_recv_wr;
+
+    /*
+    struct ibv_sge {
+        uint64_t addr; // buffer address
+        uint32_t length; // buffer length
+        uint32_t lkey; // ???
+    };
+    */
+    struct ibv_sge list;
+    list.addr = context->ib_buf;
+    list.length = req_size;
+    list.lkey = context->mr->lkey;
+
+    /*
+    struct ibv_recv_wr {
+        uint64_t wr_id;  // work request id
+        struct ibv_recv_wr* next; // next work request
+        struct ibv_sge* sg_list;
+        int num_sge;
+    };
+    */
+    struct ibv_recv_wr recv_wr;
+    recv_wr.wr_id = 1;
+    recv_wr.sg_list = &list;
+    recv_wr.num_sge = 1;
+
+    ret = ibv_post_srq_recv(context->srq, &recv_wr, &bad_recv_wr);
+    if (!ret) {
+        printf("ibv_post_srq_recv ok.\n");
+    } else {
+        printf("ibv_post_srq_recv failed.\n");
+        exit(1);
+    }
 }
 
 static void do_send()
@@ -259,5 +293,6 @@ int main(int argc, char** argv)
     open_device(&_ctx);
     create_qpair(&_ctx);
     register_memory_region(&_ctx);
+    register_recv_wq(&_ctx);
     return 0;
 }
