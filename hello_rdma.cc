@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-20 10:54:26
+ * @LastEditTime: 2021-06-20 10:59:15
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -138,8 +138,8 @@ static void open_device(rdma_context_t* context)
         printf("ibv_query_device failed.\n");
     } else {
         printf("ibv_query_device ok.\n");
+        printf("[MAX_NUM_MR:%dMB][MR_SIZE:%zuMB]\n", context->dev_attr.max_mr / (1024 * 1024), context->dev_attr.max_mr_size / (1024 * 1024));
     }
-    // printf("MAX_NUM_MR:%dMB\n", context->dev_attr.max_mr / (1024 * 1024));
 }
 
 static void create_qpair(rdma_context_t* context)
