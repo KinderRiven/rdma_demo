@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-20 15:41:04
+ * @LastEditTime: 2021-06-20 15:42:43
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -100,7 +100,8 @@ static void connect()
     qp_info.lid = 123;
     qp_info.qp_num = 5;
     qp_info.rank = 1;
-    sock_write(sock_fd, &qp_info, sizeof(qp_info));
+    size_t sz = sock_write(sock_fd, &qp_info, sizeof(qp_info));
+    printf("[%zu/%zu]\n", sz, sizeof(qp_info));
 }
 
 int main(int argc, char** argv)
