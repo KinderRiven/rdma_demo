@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-20 14:27:32
+ * @LastEditTime: 2021-06-20 14:27:49
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -296,7 +296,7 @@ static void connect(rdma_context_t* context)
     int peer_sockfd;
     struct sockaddr_in peer_addr;
     socklen_t peer_addr_len = sizeof(struct sockaddr_in);
-    peer_sockfd[i] = accept(sock_fd, (struct sockaddr*)&peer_addr, &peer_addr_len);
+    peer_sockfd = accept(sock_fd, (struct sockaddr*)&peer_addr, &peer_addr_len);
 }
 
 static void register_recv_wq(rdma_context_t* context)
