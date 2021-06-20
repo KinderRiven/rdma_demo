@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-20 20:06:02
+ * @LastEditTime: 2021-06-20 20:08:05
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -390,7 +390,7 @@ int modify_qp_to_rts(struct ibv_qp* qp, uint32_t target_qp_num, uint16_t target_
         struct ibv_qp_attr qp_attr = {
             .qp_state = IBV_QPS_INIT,
             .pkey_index = 0,
-            .port_num = IB_PORT,
+            .port_num = 1,
             .qp_access_flags = IBV_ACCESS_LOCAL_WRITE | IBV_ACCESS_REMOTE_READ | IBV_ACCESS_REMOTE_ATOMIC | IBV_ACCESS_REMOTE_WRITE,
         };
         ret = ibv_modify_qp(qp, &qp_attr,
@@ -407,16 +407,16 @@ int modify_qp_to_rts(struct ibv_qp* qp, uint32_t target_qp_num, uint16_t target_
     {
         struct ibv_qp_attr qp_attr = {
             .qp_state = IBV_QPS_RTR,
-            .path_mtu = IB_MTU,
+            .path_mtu = 4096,
             .dest_qp_num = target_qp_num,
             .rq_psn = 0,
             .max_dest_rd_atomic = 1,
             .min_rnr_timer = 12,
             .ah_attr.is_global = 0,
             .ah_attr.dlid = target_lid,
-            .ah_attr.sl = IB_SL,
+            .ah_attr.sl = 0,
             .ah_attr.src_path_bits = 0,
-            .ah_attr.port_num = IB_PORT,
+            .ah_attr.port_num = 1,
         };
 
         ret = ibv_modify_qp(qp, &qp_attr,
