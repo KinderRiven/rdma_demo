@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-20 20:22:32
+ * @LastEditTime: 2021-06-20 20:44:41
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -487,6 +487,24 @@ static void register_recv_wq(rdma_context_t* context)
     }
 }
 
+static void poll_cq(rdma_context_t* context)
+{
+    int num_wc = 20;
+    struct ibv_qp** qp = context->qp;
+    struct ibv_cq* cq = context->cq;
+    struct ibv_srq* srq = context->srq;
+    struct ibv_wc* wc = NULL;
+
+    wc = (struct ibv_wc*)calloc(num_wc, sizeof(struct ibv_wc));
+
+    while (true) {
+        int n = ibv_poll_cq(cq, num_wc, wc);
+        if (n) {
+            printf("%d\n", n);
+        }
+    }
+}
+
 ////////////////////// socket ///////////////////////
 //                     MAIN                        //
 /////////////////////////////////////////////////////
@@ -502,5 +520,6 @@ int main(int argc, char** argv)
     register_memory_region(&_ctx);
     connect(&_ctx);
     register_recv_wq(&_ctx);
+    poll_cq(&_ctx);
     return 0;
 }
