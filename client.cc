@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-20 16:10:15
+ * @LastEditTime: 2021-06-20 16:42:45
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -339,12 +339,18 @@ static void connect(rdma_context_t* context)
     }
     freeaddrinfo(result);
 
+    // send qp info
     qp_info_t qp_info;
-    qp_info.lid = 123;
-    qp_info.qp_num = 5;
+    qp_info.lid = context->port_addr.lid;
+    qp_info.qp_num = context->num_qps;
     qp_info.rank = 1;
     size_t sz = sock_write(sock_fd, &qp_info, sizeof(qp_info));
     printf("[%zu/%zu]\n", sz, sizeof(qp_info));
+
+    // get qp info
+    sz = sock_write(sock_fd, &qp_info, sizeof(qp_info));
+    printf("[%zu/%zu]\n", sz, sizeof(qp_info));
+    printf("[lid:%d][qp_num:%d][rank:%d]\n", qp_info.lid, qp_info.qp_num, qp_info.rank);
 }
 
 int main(int argc, char** argv)
