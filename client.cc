@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-20 16:42:45
+ * @LastEditTime: 2021-06-20 16:44:23
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -341,7 +341,7 @@ static void connect(rdma_context_t* context)
 
     // send qp info
     qp_info_t qp_info;
-    qp_info.lid = context->port_addr.lid;
+    qp_info.lid = context->port_attr.lid;
     qp_info.qp_num = context->num_qps;
     qp_info.rank = 1;
     size_t sz = sock_write(sock_fd, &qp_info, sizeof(qp_info));
