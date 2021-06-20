@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-20 20:44:41
+ * @LastEditTime: 2021-06-20 20:44:50
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -494,7 +494,6 @@ static void poll_cq(rdma_context_t* context)
     struct ibv_cq* cq = context->cq;
     struct ibv_srq* srq = context->srq;
     struct ibv_wc* wc = NULL;
-
     wc = (struct ibv_wc*)calloc(num_wc, sizeof(struct ibv_wc));
 
     while (true) {
