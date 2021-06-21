@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-21 14:48:52
+ * @LastEditTime: 2021-06-21 14:52:10
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -433,21 +433,6 @@ static int post_send(rdma_context_t* context, int opcode)
     // there is a receive request in the responder side, so we won't get any
     // into RNR flow
     ibv_post_send(context->qp, &sr, &bad_wr);
-
-    switch (opcode) {
-    case IBV_WR_SEND:
-        INFO("Send request was posted\n");
-        break;
-    case IBV_WR_RDMA_READ:
-        INFO("RDMA read request was posted\n");
-        break;
-    case IBV_WR_RDMA_WRITE:
-        INFO("RDMA write request was posted\n");
-        break;
-    default:
-        INFO("Unknown request was posted\n");
-        break;
-    }
     return 0;
 }
 
