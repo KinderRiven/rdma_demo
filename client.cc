@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-21 10:22:22
+ * @LastEditTime: 2021-06-21 10:27:43
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -439,6 +439,7 @@ int post_send(uint32_t req_size, uint32_t lkey, uint64_t wr_id, uint32_t imm_dat
     send_wr.imm_data = htonl(imm_data);
 
     ret = ibv_post_send(qp, &send_wr, &bad_send_wr);
+    printf("ibv_post_send.[%d]\n", ret);
     return ret;
 }
 
