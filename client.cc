@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-21 10:20:02
+ * @LastEditTime: 2021-06-21 10:20:25
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -460,6 +460,6 @@ int main(int argc, char** argv)
     create_qpair(&_ctx);
     register_memory_region(&_ctx);
     connect(&_ctx);
-    test_send(context);
+    test_send(&_ctx);
     return 0;
 }
