@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-21 14:47:53
+ * @LastEditTime: 2021-06-21 14:48:20
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -459,7 +459,7 @@ static int post_receive(rdma_context_t* context)
     memset(&sge, 0, sizeof(sge));
     sge.addr = (uintptr_t)context->buf;
     sge.length = MSG_SIZE;
-    sge.lkey = res->mr->lkey;
+    sge.lkey = context->mr->lkey;
 
     // prepare the receive work request
     memset(&rr, 0, sizeof(rr));
