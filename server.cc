@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-21 15:04:26
+ * @LastEditTime: 2021-06-21 15:08:07
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -432,7 +432,7 @@ static int post_send(qp_info_t* qp_info, rdma_context_t* context, int opcode)
 
     // there is a receive request in the responder side, so we won't get any
     // into RNR flow
-    ibv_post_send(context->qp, &sr, &bad_wr);
+    ibv_post_send(context->qp[0], &sr, &bad_wr);
     return 0;
 }
 
@@ -457,7 +457,7 @@ static int post_receive(qp_info_t* qp_info, rdma_context_t* context)
     rr.num_sge = 1;
 
     // post the receive request to the RQ
-    ibv_post_recv(context->qp, &rr, &bad_wr);
+    ibv_post_recv(context->qp[0], &rr, &bad_wr);
     return 0;
 }
 
