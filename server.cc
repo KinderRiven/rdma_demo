@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-21 15:08:07
+ * @LastEditTime: 2021-06-21 15:23:50
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -18,6 +18,14 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
+struct qp_info_t {
+    uint64_t addr; // buffer address
+    uint32_t rkey; // remote key
+    uint32_t qp_num; // QP number
+    uint16_t lid; // LID of the IB port
+    uint8_t gid[16]; // GID
+} __attribute__((packed));
+
 struct rdma_context_t {
 public:
     char* ib_buf;
@@ -29,19 +37,13 @@ public:
     struct ibv_srq* srq;
     struct ibv_port_attr port_attr;
     struct ibv_device_attr dev_attr;
+    qp_info_t* local_qp;
+    qp_info_t* remote_qp;
 
 public: // need initlizate
     int num_qps;
     size_t ib_buf_size;
 };
-
-struct qp_info_t {
-    uint64_t addr; // buffer address
-    uint32_t rkey; // remote key
-    uint32_t qp_num; // QP number
-    uint16_t lid; // LID of the IB port
-    uint8_t gid[16]; // GID
-} __attribute__((packed));
 
 rdma_context_t g_context;
 
@@ -515,20 +517,22 @@ static void connect_qpair(rdma_context_t* context)
 
     //////////////////// SWAP QP INFO ////////////////////////
     // recv
-    qp_info_t remote_qp_info;
-    size_t sz = sock_read(peer_sockfd, &remote_qp_info, sizeof(remote_qp_info));
-    printf("|--sock_read[%zu/%zu]\n", sz, sizeof(remote_qp_info));
-    printf("|----[addr:%llx][rkey:%d]\n", remote_qp_info.addr, remote_qp_info.rkey);
-    printf("|----[lid:%d][qp_num:%d]\n", remote_qp_info.lid, remote_qp_info.qp_num);
+    qp_info_t* remote_qp_info = (qp_info_t*)malloc(sizeof(qp_info_t));
+    context->remote_qp = remote_qp_info;
+    size_t sz = sock_read(peer_sockfd, remote_qp_info, sizeof(qp_info_t));
+    printf("|--sock_read[%zu/%zu]\n", sz, sizeof(qp_info_t));
+    printf("|----[addr:%llx][rkey:%d]\n", remote_qp_info->addr, remote_qp_info->rkey);
+    printf("|----[lid:%d][qp_num:%d]\n", remote_qp_info->lid, remote_qp_info->qp_num);
 
     // send
-    qp_info_t local_qp_info;
-    local_qp_info.addr = (uint64_t)context->ib_buf;
-    local_qp_info.rkey = context->mr->rkey;
-    local_qp_info.qp_num = context->num_qps;
-    local_qp_info.lid = context->port_attr.lid;
-    sz = sock_write(peer_sockfd, &local_qp_info, sizeof(local_qp_info));
-    printf("|--sock_write[%zu/%zu]\n", sz, sizeof(local_qp_info));
+    qp_info_t* local_qp_info = (qp_info_t*)malloc(sizeof(qp_info_t));
+    context->local_qp = local_qp_info;
+    local_qp_info->addr = (uint64_t)context->ib_buf;
+    local_qp_info->rkey = context->mr->rkey;
+    local_qp_info->qp_num = context->num_qps;
+    local_qp_info->lid = context->port_attr.lid;
+    sz = sock_write(peer_sockfd, local_qp_info, sizeof(qp_info_t));
+    printf("|--sock_write[%zu/%zu]\n", sz, sizeof(qp_info_t));
 
     /////////////////
     ret = modify_qp_to_init(context->qp[0]);
