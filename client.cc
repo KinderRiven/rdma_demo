@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-20 20:15:05
+ * @LastEditTime: 2021-06-21 10:19:30
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -420,6 +420,35 @@ static void connect(rdma_context_t* context)
     modify_qp_to_rts(context->qp[0], 1, remote_qp_info.lid);
 }
 
+int post_send(uint32_t req_size, uint32_t lkey, uint64_t wr_id, uint32_t imm_data, struct ibv_qp* qp, char* buf)
+{
+    int ret = 0;
+    struct ibv_send_wr* bad_send_wr;
+
+    struct ibv_sge list;
+    list.addr = (uintptr_t)buf;
+    list.length = req_size;
+    list.lkey = lkey;
+
+    struct ibv_send_wr send_wr;
+    send_wr.wr_id = wr_id;
+    send_wr.sg_list = &list;
+    send_wr.num_sge = 1;
+    send_wr.opcode = IBV_WR_SEND_WITH_IMM;
+    send_wr.send_flags = IBV_SEND_SIGNALED;
+    send_wr.imm_data = htonl(imm_data);
+
+    ret = ibv_post_send(qp, &send_wr, &bad_send_wr);
+    return ret;
+}
+
+void test_send(rdma_context_t* context)
+{
+    size_t msg_size = 64;
+    uint64_t buff_ptr = (uint64_t)context->ib_buf;
+    post_send(msg_size, context->mr->lkey, buff_ptr, context->srq, context->qp[0], buff_ptr);
+}
+
 int main(int argc, char** argv)
 {
     rdma_context_t _ctx;
@@ -431,5 +460,6 @@ int main(int argc, char** argv)
     create_qpair(&_ctx);
     register_memory_region(&_ctx);
     connect(&_ctx);
+    test_send(context);
     return 0;
 }
