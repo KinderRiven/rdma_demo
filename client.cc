@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-21 10:46:26
+ * @LastEditTime: 2021-06-21 13:12:44
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -36,10 +36,12 @@ public: // need initlizate
 };
 
 struct qp_info_t {
-    uint16_t lid;
-    uint32_t qp_num;
-    uint32_t rank;
-};
+    uint64_t addr; // buffer address
+    uint32_t rkey; // remote key
+    uint32_t qp_num; // QP number
+    uint16_t lid; // LID of the IB port
+    uint8_t gid[16]; // GID
+} __attribute__((packed));
 
 rdma_context_t g_context;
 
@@ -404,19 +406,19 @@ static void connect(rdma_context_t* context)
 
     // send
     qp_info_t local_qp_info;
-    local_qp_info.lid = context->port_attr.lid;
+    local_qp_info.addr = (uint64_t)context->ib_buf;
+    local_qp_info.rkey = context->mr->rkey;
     local_qp_info.qp_num = context->num_qps;
-    local_qp_info.rank = 1;
-    size_t sz = sock_write(sock_fd, &local_qp_info, sizeof(local_qp_info));
+    local_qp_info.lid = context->port_attr.lid;
+    sz = sock_write(peer_sockfd, &local_qp_info, sizeof(local_qp_info));
     printf("[%zu/%zu]\n", sz, sizeof(local_qp_info));
 
     // recv
     qp_info_t remote_qp_info;
-    sz = sock_read(sock_fd, &remote_qp_info, sizeof(remote_qp_info));
-    printf("[%zu/%zu]\n", sz, sizeof(remote_qp_info));
-    printf("[lid:%d][qp_num:%d][rank:%d]\n", remote_qp_info.lid, remote_qp_info.qp_num, remote_qp_info.rank);
-
-    modify_qp_to_rts(context->qp[0], 1, remote_qp_info.lid);
+    size_t sz = sock_read(peer_sockfd, &remote_qp_info, sizeof(remote_qp_info));
+    printf("|--sock_read[%zu/%zu]\n", sz, sizeof(remote_qp_info));
+    printf("|----[addr:%llx][rkey:%d]\n", remote_qp_info.addr, remote_qp_info.rkey);
+    printf("|----[lid:%d][qp_num:%d]\n", remote_qp_info.lid, remote_qp_info.qp_num);
 }
 
 int post_send(uint32_t req_size, uint32_t lkey, uint64_t wr_id, uint32_t imm_data, struct ibv_qp* qp, char* buf)

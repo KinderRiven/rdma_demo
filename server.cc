@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-21 10:45:38
+ * @LastEditTime: 2021-06-21 13:11:32
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -36,15 +36,17 @@ public: // need initlizate
 };
 
 struct qp_info_t {
-    uint16_t lid;
-    uint32_t qp_num;
-    uint32_t rank;
-};
+    uint64_t addr; // buffer address
+    uint32_t rkey; // remote key
+    uint32_t qp_num; // QP number
+    uint16_t lid; // LID of the IB port
+    uint8_t gid[16]; // GID
+} __attribute__((packed));
 
 rdma_context_t g_context;
 
 ////////////////////// socket ///////////////////////
-//                    RDMA准备                      //
+//                    RDMA初始化                    //
 /////////////////////////////////////////////////////
 static void open_device(rdma_context_t* context)
 {
@@ -269,8 +271,17 @@ static void register_memory_region(rdma_context_t* context)
     }
 }
 
+static void rdma_init(rdma_context_t* context)
+{
+    open_device(context);
+
+    create_qpair(context);
+
+    register_memory_region(context);
+}
+
 ////////////////////// socket ///////////////////////
-//          使用传统的TCP/IP链接去交换信息             //
+//               建立本地QP和远端QP的连接             //
 /////////////////////////////////////////////////////
 size_t sock_read(int sock_fd, void* buffer, size_t len)
 {
@@ -381,10 +392,11 @@ int modify_qp_to_rts(struct ibv_qp* qp, uint32_t target_qp_num, uint16_t target_
     return 0;
 }
 
-static void connect(rdma_context_t* context)
+static void connect_qpair(rdma_context_t* context)
 {
     printf("|connect.\n");
-    /////////////////// bind /////////////////////
+    //////////////////////////////////////////////////
+    // bind
     struct addrinfo hints;
     struct addrinfo *result, *rp;
     int sock_fd = -1, ret = 0;
@@ -416,7 +428,7 @@ static void connect(rdma_context_t* context)
     }
     freeaddrinfo(result);
 
-    /////////////////// listen /////////////////////
+    // listen
     ret = listen(sock_fd, 5);
     if (!ret) {
         printf("|--listen ok.\n");
@@ -425,28 +437,29 @@ static void connect(rdma_context_t* context)
         exit(1);
     }
 
-    /////////////////// accept /////////////////////
+    // accept
     int peer_sockfd;
     struct sockaddr_in peer_addr;
     socklen_t peer_addr_len = sizeof(struct sockaddr_in);
     peer_sockfd = accept(sock_fd, (struct sockaddr*)&peer_addr, &peer_addr_len);
     printf("|--accept ok.[%d]\n", peer_sockfd);
 
+    //////////////////////////////////////////////////
     // recv
     qp_info_t remote_qp_info;
     size_t sz = sock_read(peer_sockfd, &remote_qp_info, sizeof(remote_qp_info));
-    printf("[%zu/%zu]\n", sz, sizeof(remote_qp_info));
-    printf("[lid:%d][qp_num:%d][rank:%d]\n", remote_qp_info.lid, remote_qp_info.qp_num, remote_qp_info.rank);
+    printf("|--sock_read[%zu/%zu]\n", sz, sizeof(remote_qp_info));
+    printf("|----[addr:%llx][rkey:%d]\n", remote_qp_info.addr, remote_qp_info.rkey);
+    printf("|----[lid:%d][qp_num:%d]\n", remote_qp_info.lid, remote_qp_info.qp_num);
 
     // send
     qp_info_t local_qp_info;
-    local_qp_info.lid = context->port_attr.lid;
+    local_qp_info.addr = (uint64_t)context->ib_buf;
+    local_qp_info.rkey = context->mr->rkey;
     local_qp_info.qp_num = context->num_qps;
-    local_qp_info.rank = 1;
+    local_qp_info.lid = context->port_attr.lid;
     sz = sock_write(peer_sockfd, &local_qp_info, sizeof(local_qp_info));
     printf("[%zu/%zu]\n", sz, sizeof(local_qp_info));
-
-    modify_qp_to_rts(context->qp[0], 1, remote_qp_info.lid);
 }
 
 static void register_recv_wq(rdma_context_t* context)
@@ -500,6 +513,10 @@ static void poll_cq(rdma_context_t* context)
 
     while (true) {
         int n = ibv_poll_cq(cq, num_wc, wc);
+        if (n < 0) {
+            printf("ibv_poll_cq failed.\n");
+            exit(1);
+        }
         if (n) {
             printf("%d\n", n);
         }
@@ -516,11 +533,7 @@ int main(int argc, char** argv)
     _ctx.num_qps = 1;
     _ctx.ib_buf_size = 2UL * 1024 * 1024;
 
-    open_device(&_ctx);
-    create_qpair(&_ctx);
-    register_memory_region(&_ctx);
-    connect(&_ctx);
-    register_recv_wq(&_ctx);
-    poll_cq(&_ctx);
+    rdma_init(&_ctx);
+    connect_qpair(&_ctx);
     return 0;
 }
