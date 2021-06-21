@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-21 10:27:43
+ * @LastEditTime: 2021-06-21 10:46:26
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -36,10 +36,9 @@ public: // need initlizate
 };
 
 struct qp_info_t {
-    uint32_t lid;
+    uint16_t lid;
     uint32_t qp_num;
     uint32_t rank;
-    uint32_t unused_;
 };
 
 rdma_context_t g_context;
