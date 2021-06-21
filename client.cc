@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-21 15:31:10
+ * @LastEditTime: 2021-06-21 20:14:19
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -452,6 +452,90 @@ static void connect_qpair(rdma_context_t* context)
     printf("|--modify_qp_to_rts = %d\n", ret);
 }
 
+// ------------------ Send/Recv -------------------- //
+static int post_send(rdma_context_t* context, int opcode)
+{
+    struct ibv_send_wr sr;
+    struct ibv_sge sge;
+    struct ibv_send_wr* bad_wr = NULL;
+    qp_info_t* qp_info = context->remote_qp;
+
+    // prepare the scatter / gather entry
+    memset(&sge, 0, sizeof(sge));
+
+    sge.addr = (uintptr_t)context->ib_buf;
+    sge.length = MSG_SIZE;
+    sge.lkey = context->mr->lkey;
+
+    // prepare the send work request
+    memset(&sr, 0, sizeof(sr));
+
+    sr.next = NULL;
+    sr.wr_id = 0;
+    sr.sg_list = &sge;
+
+    sr.num_sge = 1;
+    sr.opcode = (ibv_wr_opcode)opcode;
+    sr.send_flags = IBV_SEND_SIGNALED;
+
+    if (opcode != IBV_WR_SEND) {
+        sr.wr.rdma.remote_addr = qp_info->addr;
+        sr.wr.rdma.rkey = qp_info->rkey;
+    }
+
+    // there is a receive request in the responder side, so we won't get any
+    // into RNR flow
+    int ret = ibv_post_send(context->qp[0], &sr, &bad_wr);
+    return ret;
+}
+
+static int post_receive(rdma_context_t* context)
+{
+    struct ibv_recv_wr rr;
+    struct ibv_sge sge;
+    struct ibv_recv_wr* bad_wr;
+    qp_info_t* qp_info = context->remote_qp;
+
+    // prepare the scatter / gather entry
+    memset(&sge, 0, sizeof(sge));
+    sge.addr = (uintptr_t)context->ib_buf;
+    sge.length = MSG_SIZE;
+    sge.lkey = context->mr->lkey;
+
+    // prepare the receive work request
+    memset(&rr, 0, sizeof(rr));
+
+    rr.next = NULL;
+    rr.wr_id = 0;
+    rr.sg_list = &sge;
+    rr.num_sge = 1;
+
+    // post the receive request to the RQ
+    int ret = ibv_post_recv(context->qp[0], &rr, &bad_wr);
+    return ret;
+}
+
+static void poll_cq(rdma_context_t* context)
+{
+    int num_wc = 20;
+    struct ibv_qp** qp = context->qp;
+    struct ibv_cq* cq = context->cq;
+    struct ibv_srq* srq = context->srq;
+    struct ibv_wc* wc = NULL;
+    wc = (struct ibv_wc*)calloc(num_wc, sizeof(struct ibv_wc));
+
+    while (true) {
+        int n = ibv_poll_cq(cq, num_wc, wc);
+        if (n < 0) {
+            printf("ibv_poll_cq failed.\n");
+            exit(1);
+        }
+        if (n) {
+            printf("%d\n", n);
+        }
+    }
+}
+
 int main(int argc, char** argv)
 {
     rdma_context_t _ctx;
@@ -461,5 +545,6 @@ int main(int argc, char** argv)
 
     rdma_init(&_ctx);
     connect_qpair(&_ctx);
+    poll_cq(&_ctx);
     return 0;
 }
