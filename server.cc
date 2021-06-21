@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-21 13:31:42
+ * @LastEditTime: 2021-06-21 13:32:59
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -335,7 +335,7 @@ static int modify_qp_to_init(struct ibv_qp* qp)
 
     memset(&attr, 0, sizeof(attr));
     attr.qp_state = IBV_QPS_INIT;
-    attr.port_num = config.ib_port;
+    attr.port_num = 1;
     attr.pkey_index = 0;
     attr.qp_access_flags = IBV_ACCESS_LOCAL_WRITE | IBV_ACCESS_REMOTE_READ | IBV_ACCESS_REMOTE_WRITE;
 
@@ -363,7 +363,7 @@ static int modify_qp_to_rtr(struct ibv_qp* qp, uint32_t remote_qpn,
     attr.ah_attr.dlid = dlid;
     attr.ah_attr.sl = 0;
     attr.ah_attr.src_path_bits = 0;
-    attr.ah_attr.port_num = config.ib_port;
+    attr.ah_attr.port_num = 1;
 
     if (config.gid_idx >= 0) {
         attr.ah_attr.is_global = 1;
