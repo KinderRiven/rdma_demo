@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-21 20:14:58
+ * @LastEditTime: 2021-06-21 20:15:26
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -17,6 +17,8 @@
 #include <string.h>
 #include <sys/socket.h>
 #include <unistd.h>
+
+#define MSG_SIZE (64)
 
 struct qp_info_t {
     uint64_t addr; // buffer address
