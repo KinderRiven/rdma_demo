@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-21 13:39:01
+ * @LastEditTime: 2021-06-21 14:47:23
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -396,6 +396,84 @@ static int modify_qp_to_rts(struct ibv_qp* qp)
     flags = IBV_QP_STATE | IBV_QP_TIMEOUT | IBV_QP_RETRY_CNT | IBV_QP_RNR_RETRY | IBV_QP_SQ_PSN | IBV_QP_MAX_QP_RD_ATOMIC;
 
     return ibv_modify_qp(qp, &attr, flags);
+}
+
+// This function will create and post a send work request.
+static int post_send(rdma_context_t* context, int opcode)
+{
+    struct ibv_send_wr sr;
+    struct ibv_sge sge;
+    struct ibv_send_wr* bad_wr = NULL;
+
+    // prepare the scatter / gather entry
+    memset(&sge, 0, sizeof(sge));
+
+    sge.addr = (uintptr_t)context->ib_buf;
+    sge.length = MSG_SIZE;
+    sge.lkey = context->mr->lkey;
+
+    // prepare the send work request
+    memset(&sr, 0, sizeof(sr));
+
+    sr.next = NULL;
+    sr.wr_id = 0;
+    sr.sg_list = &sge;
+
+    sr.num_sge = 1;
+    sr.opcode = opcode;
+    sr.send_flags = IBV_SEND_SIGNALED;
+
+    if (opcode != IBV_WR_SEND) {
+        sr.wr.rdma.remote_addr = context->remote_props.addr;
+        sr.wr.rdma.rkey = context->remote_props.rkey;
+    }
+
+    // there is a receive request in the responder side, so we won't get any
+    // into RNR flow
+    ibv_post_send(context->qp, &sr, &bad_wr);
+
+    switch (opcode) {
+    case IBV_WR_SEND:
+        INFO("Send request was posted\n");
+        break;
+    case IBV_WR_RDMA_READ:
+        INFO("RDMA read request was posted\n");
+        break;
+    case IBV_WR_RDMA_WRITE:
+        INFO("RDMA write request was posted\n");
+        break;
+    default:
+        INFO("Unknown request was posted\n");
+        break;
+    }
+    return 0;
+}
+
+static int post_receive(rdma_context_t* context)
+{
+    struct ibv_recv_wr rr;
+    struct ibv_sge sge;
+    struct ibv_recv_wr* bad_wr;
+
+    // prepare the scatter / gather entry
+    memset(&sge, 0, sizeof(sge));
+    sge.addr = (uintptr_t)context->buf;
+    sge.length = MSG_SIZE;
+    sge.lkey = res->mr->lkey;
+
+    // prepare the receive work request
+    memset(&rr, 0, sizeof(rr));
+
+    rr.next = NULL;
+    rr.wr_id = 0;
+    rr.sg_list = &sge;
+    rr.num_sge = 1;
+
+    // post the receive request to the RQ
+    CHECK(ibv_post_recv(context->qp, &rr, &bad_wr));
+    INFO("Receive request was posted\n");
+
+    return 0;
 }
 
 static void connect_qpair(rdma_context_t* context)
