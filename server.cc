@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-21 14:59:09
+ * @LastEditTime: 2021-06-21 15:04:26
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -401,7 +401,7 @@ static int modify_qp_to_rts(struct ibv_qp* qp)
 }
 
 // This function will create and post a send work request.
-static int post_send(qp_info_t qp_info, rdma_context_t* context, int opcode)
+static int post_send(qp_info_t* qp_info, rdma_context_t* context, int opcode)
 {
     struct ibv_send_wr sr;
     struct ibv_sge sge;
@@ -436,7 +436,7 @@ static int post_send(qp_info_t qp_info, rdma_context_t* context, int opcode)
     return 0;
 }
 
-static int post_receive(qp_info_t qp_info, rdma_context_t* context)
+static int post_receive(qp_info_t* qp_info, rdma_context_t* context)
 {
     struct ibv_recv_wr rr;
     struct ibv_sge sge;
@@ -444,7 +444,7 @@ static int post_receive(qp_info_t qp_info, rdma_context_t* context)
 
     // prepare the scatter / gather entry
     memset(&sge, 0, sizeof(sge));
-    sge.addr = (uintptr_t)context->buf;
+    sge.addr = (uintptr_t)context->ib_buf;
     sge.length = MSG_SIZE;
     sge.lkey = context->mr->lkey;
 
