@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-21 15:27:29
+ * @LastEditTime: 2021-06-21 15:29:31
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -17,6 +17,14 @@
 #include <string.h>
 #include <sys/socket.h>
 #include <unistd.h>
+
+struct qp_info_t {
+    uint64_t addr; // buffer address
+    uint32_t rkey; // remote key
+    uint32_t qp_num; // QP number
+    uint16_t lid; // LID of the IB port
+    uint8_t gid[16]; // GID
+} __attribute__((packed));
 
 struct rdma_context_t {
 public:
@@ -37,14 +45,6 @@ public: // need initlizate
     int num_qps;
     size_t ib_buf_size;
 };
-
-struct qp_info_t {
-    uint64_t addr; // buffer address
-    uint32_t rkey; // remote key
-    uint32_t qp_num; // QP number
-    uint16_t lid; // LID of the IB port
-    uint8_t gid[16]; // GID
-} __attribute__((packed));
 
 rdma_context_t g_context;
 
