@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-21 14:48:20
+ * @LastEditTime: 2021-06-21 14:48:52
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -44,6 +44,8 @@ struct qp_info_t {
 } __attribute__((packed));
 
 rdma_context_t g_context;
+
+#define MSG_SIZE (64)
 
 ////////////////////// socket ///////////////////////
 //                    RDMA初始化                    //
