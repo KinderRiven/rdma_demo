@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-21 20:10:29
+ * @LastEditTime: 2021-06-21 21:36:58
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -65,7 +65,7 @@ static void open_device(rdma_context_t* context)
         exit(1);
     } else {
         printf("|--ibv_get_device_list ok.[%d]\n", _num_dev);
-        _dev = *_dev_list; // used first
+        _dev = _dev_list[1]; // used first
     }
 
     // 1.2 打开RDMA设备
