@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-21 14:47:23
+ * @LastEditTime: 2021-06-21 14:47:53
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -470,9 +470,7 @@ static int post_receive(rdma_context_t* context)
     rr.num_sge = 1;
 
     // post the receive request to the RQ
-    CHECK(ibv_post_recv(context->qp, &rr, &bad_wr));
-    INFO("Receive request was posted\n");
-
+    ibv_post_recv(context->qp, &rr, &bad_wr);
     return 0;
 }
 
