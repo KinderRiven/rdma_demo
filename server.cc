@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-21 13:13:44
+ * @LastEditTime: 2021-06-21 13:26:54
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -327,75 +327,83 @@ size_t sock_write(int sock_fd, void* buffer, size_t len)
     return tot_written;
 }
 
-int modify_qp_to_rts(struct ibv_qp* qp, uint32_t target_qp_num, uint16_t target_lid)
+// Transition a QP from the RESET to INIT state
+static int modify_qp_to_init(struct ibv_qp* qp)
 {
-    int ret = 0;
-    /* change QP state to INIT */
-    {
-        struct ibv_qp_attr qp_attr;
-        qp_attr.qp_state = IBV_QPS_INIT;
-        qp_attr.pkey_index = 0;
-        qp_attr.port_num = 1;
-        qp_attr.qp_access_flags = IBV_ACCESS_LOCAL_WRITE | IBV_ACCESS_REMOTE_READ | IBV_ACCESS_REMOTE_ATOMIC | IBV_ACCESS_REMOTE_WRITE;
-        ret = ibv_modify_qp(qp, &qp_attr,
-            IBV_QP_STATE | IBV_QP_PKEY_INDEX | IBV_QP_PORT | IBV_QP_ACCESS_FLAGS);
-        if (!ret) {
-            printf("ibv_modify_qp ok.\n");
-        } else {
-            printf("ibv_modify_qp failed.\n");
-            exit(1);
-        }
+    struct ibv_qp_attr attr;
+    int flags;
+
+    memset(&attr, 0, sizeof(attr));
+    attr.qp_state = IBV_QPS_INIT;
+    attr.port_num = config.ib_port;
+    attr.pkey_index = 0;
+    attr.qp_access_flags = IBV_ACCESS_LOCAL_WRITE | IBV_ACCESS_REMOTE_READ | IBV_ACCESS_REMOTE_WRITE;
+
+    flags = IBV_QP_STATE | IBV_QP_PKEY_INDEX | IBV_QP_PORT | IBV_QP_ACCESS_FLAGS;
+
+    return ibv_modify_qp(qp, &attr, flags);
+}
+
+// Transition a QP from the INIT to RTR state, using the specified QP number
+static int modify_qp_to_rtr(struct ibv_qp* qp, uint32_t remote_qpn,
+    uint16_t dlid, uint8_t* dgid)
+{
+    struct ibv_qp_attr attr;
+    int flags;
+
+    memset(&attr, 0, sizeof(attr));
+
+    attr.qp_state = IBV_QPS_RTR;
+    attr.path_mtu = IBV_MTU_256;
+    attr.dest_qp_num = remote_qpn;
+    attr.rq_psn = 0;
+    attr.max_dest_rd_atomic = 1;
+    attr.min_rnr_timer = 0x12;
+    attr.ah_attr.is_global = 0;
+    attr.ah_attr.dlid = dlid;
+    attr.ah_attr.sl = 0;
+    attr.ah_attr.src_path_bits = 0;
+    attr.ah_attr.port_num = config.ib_port;
+
+    if (config.gid_idx >= 0) {
+        attr.ah_attr.is_global = 1;
+        attr.ah_attr.port_num = 1;
+        memcpy(&attr.ah_attr.grh.dgid, dgid, 16);
+        attr.ah_attr.grh.flow_label = 0;
+        attr.ah_attr.grh.hop_limit = 1;
+        attr.ah_attr.grh.sgid_index = config.gid_idx;
+        attr.ah_attr.grh.traffic_class = 0;
     }
 
-    /* Change QP state to RTR */
-    {
-        struct ibv_qp_attr qp_attr;
-        qp_attr.qp_state = IBV_QPS_RTR;
-        qp_attr.path_mtu = IBV_MTU_4096;
-        qp_attr.dest_qp_num = target_qp_num;
-        qp_attr.rq_psn = 0;
-        qp_attr.max_dest_rd_atomic = 1;
-        qp_attr.min_rnr_timer = 12;
-        qp_attr.ah_attr.is_global = 0;
-        qp_attr.ah_attr.dlid = target_lid;
-        qp_attr.ah_attr.sl = 0;
-        qp_attr.ah_attr.src_path_bits = 0;
-        qp_attr.ah_attr.port_num = 1;
-        ret = ibv_modify_qp(qp, &qp_attr,
-            IBV_QP_STATE | IBV_QP_AV | IBV_QP_PATH_MTU | IBV_QP_DEST_QPN | IBV_QP_RQ_PSN | IBV_QP_MAX_DEST_RD_ATOMIC | IBV_QP_MIN_RNR_TIMER);
-        if (!ret) {
-            printf("ibv_modify_qp ok.\n");
-        } else {
-            printf("ibv_modify_qp failed.\n");
-            exit(1);
-        }
-    }
+    flags = IBV_QP_STATE | IBV_QP_AV | IBV_QP_PATH_MTU | IBV_QP_DEST_QPN | IBV_QP_RQ_PSN | IBV_QP_MAX_DEST_RD_ATOMIC | IBV_QP_MIN_RNR_TIMER;
 
-    /* Change QP state to RTS */
-    {
-        struct ibv_qp_attr qp_attr;
-        qp_attr.qp_state = IBV_QPS_RTS;
-        qp_attr.timeout = 14;
-        qp_attr.retry_cnt = 7;
-        qp_attr.rnr_retry = 7;
-        qp_attr.sq_psn = 0;
-        qp_attr.max_rd_atomic = 1;
-        ret = ibv_modify_qp(qp, &qp_attr,
-            IBV_QP_STATE | IBV_QP_TIMEOUT | IBV_QP_RETRY_CNT | IBV_QP_RNR_RETRY | IBV_QP_SQ_PSN | IBV_QP_MAX_QP_RD_ATOMIC);
-        if (!ret) {
-            printf("ibv_modify_qp ok.\n");
-        } else {
-            printf("ibv_modify_qp failed.\n");
-            exit(1);
-        }
-    }
-    return 0;
+    return ibv_modify_qp(qp, &attr, flags);
+}
+
+// Transition a QP from the RTR to RTS state
+static int modify_qp_to_rts(struct ibv_qp* qp)
+{
+    struct ibv_qp_attr attr;
+    int flags;
+
+    memset(&attr, 0, sizeof(attr));
+
+    attr.qp_state = IBV_QPS_RTS;
+    attr.timeout = 0x12; // 18
+    attr.retry_cnt = 6;
+    attr.rnr_retry = 0;
+    attr.sq_psn = 0;
+    attr.max_rd_atomic = 1;
+
+    flags = IBV_QP_STATE | IBV_QP_TIMEOUT | IBV_QP_RETRY_CNT | IBV_QP_RNR_RETRY | IBV_QP_SQ_PSN | IBV_QP_MAX_QP_RD_ATOMIC;
+
+    return ibv_modify_qp(qp, &attr, flags);
 }
 
 static void connect_qpair(rdma_context_t* context)
 {
     printf("|connect.\n");
-    //////////////////////////////////////////////////
+    //////////////// BUILD TCP/IP CONNECT /////////////////////////
     // bind
     struct addrinfo hints;
     struct addrinfo *result, *rp;
@@ -444,7 +452,7 @@ static void connect_qpair(rdma_context_t* context)
     peer_sockfd = accept(sock_fd, (struct sockaddr*)&peer_addr, &peer_addr_len);
     printf("|--accept ok.[%d]\n", peer_sockfd);
 
-    //////////////////////////////////////////////////
+    //////////////////// SWAP QP INFO ////////////////////////
     // recv
     qp_info_t remote_qp_info;
     size_t sz = sock_read(peer_sockfd, &remote_qp_info, sizeof(remote_qp_info));
@@ -460,46 +468,19 @@ static void connect_qpair(rdma_context_t* context)
     local_qp_info.lid = context->port_attr.lid;
     sz = sock_write(peer_sockfd, &local_qp_info, sizeof(local_qp_info));
     printf("|--sock_write[%zu/%zu]\n", sz, sizeof(local_qp_info));
-}
 
-static void register_recv_wq(rdma_context_t* context)
-{
-    printf("|register_recv_wq.\n");
-    int ret = 0;
-    struct ibv_recv_wr* bad_recv_wr;
+    /////////////////
+    ret = modify_qp_to_init(context->qp[0]);
+    printf("modify_qp_to_init = %d\n", ret);
 
-    /*
-    struct ibv_sge {
-        uint64_t addr; // buffer address
-        uint32_t length; // buffer length
-        uint32_t lkey; // ???
-    };
-    */
-    struct ibv_sge list;
-    list.addr = (uint64_t)context->ib_buf;
-    list.length = context->ib_buf_size;
-    list.lkey = context->mr->lkey;
+    // modify the QP to RTR
+    ret = modify_qp_to_rtr(context->qp[0], remote_qp_info.qp_num, remote_qp_info.lid,
+        remote_qp_info.gid);
+    printf("modify_qp_to_rtr = %d\n", ret);
 
-    /*
-    struct ibv_recv_wr {
-        uint64_t wr_id;  // work request id
-        struct ibv_recv_wr* next; // next work request
-        struct ibv_sge* sg_list;
-        int num_sge;
-    };
-    */
-    struct ibv_recv_wr recv_wr;
-    recv_wr.wr_id = 1;
-    recv_wr.sg_list = &list;
-    recv_wr.num_sge = 1;
-
-    ret = ibv_post_srq_recv(context->srq, &recv_wr, &bad_recv_wr);
-    if (!ret) {
-        printf("|--ibv_post_srq_recv ok.\n");
-    } else {
-        printf("|--ibv_post_srq_recv failed.\n");
-        exit(1);
-    }
+    // modify QP state to RTS
+    ret = modify_qp_to_rts(context->qp[0]);
+    printf("modify_qp_to_rts = %d\n", ret);
 }
 
 static void poll_cq(rdma_context_t* context)
