@@ -579,7 +579,6 @@ int main(int argc, char** argv)
     rdma_init(&_ctx);
     connect_qpair(&_ctx);
 
-    int ret = post_send(&_ctx, IBV_WR_RDMA_WRITE);
-    printf("post_send = %d\n", ret);
+    poll_cq(&_ctx);
     return 0;
 }

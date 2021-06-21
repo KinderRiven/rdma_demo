@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-21 20:14:19
+ * @LastEditTime: 2021-06-21 20:14:58
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -545,6 +545,8 @@ int main(int argc, char** argv)
 
     rdma_init(&_ctx);
     connect_qpair(&_ctx);
-    poll_cq(&_ctx);
+
+    int ret = post_send(&_ctx, IBV_WR_RDMA_WRITE);
+    printf("post_send = %d\n", ret);
     return 0;
 }
