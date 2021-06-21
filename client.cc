@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-21 10:21:37
+ * @LastEditTime: 2021-06-21 10:22:22
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -446,7 +446,7 @@ void test_send(rdma_context_t* context)
 {
     uint32_t msg_size = 64;
     uint64_t buff_ptr = (uint64_t)context->ib_buf;
-    post_send(msg_size, context->mr->lkey, buff_ptr, context->srq, 0, context->qp[0], (char*)buff_ptr);
+    post_send(msg_size, context->mr->lkey, buff_ptr, 0, context->qp[0], (char*)buff_ptr);
 }
 
 int main(int argc, char** argv)
