@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-21 13:11:32
+ * @LastEditTime: 2021-06-21 13:13:44
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -459,7 +459,7 @@ static void connect_qpair(rdma_context_t* context)
     local_qp_info.qp_num = context->num_qps;
     local_qp_info.lid = context->port_attr.lid;
     sz = sock_write(peer_sockfd, &local_qp_info, sizeof(local_qp_info));
-    printf("[%zu/%zu]\n", sz, sizeof(local_qp_info));
+    printf("|--sock_write[%zu/%zu]\n", sz, sizeof(local_qp_info));
 }
 
 static void register_recv_wq(rdma_context_t* context)
