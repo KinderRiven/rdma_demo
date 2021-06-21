@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-21 13:33:53
+ * @LastEditTime: 2021-06-21 13:34:55
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -392,7 +392,7 @@ static int modify_qp_to_rts(struct ibv_qp* qp)
     return ibv_modify_qp(qp, &attr, flags);
 }
 
-static void connect(rdma_context_t* context)
+static void connect_qpair(rdma_context_t* context)
 {
     printf("|connect.\n");
     struct addrinfo hints;
