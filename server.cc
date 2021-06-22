@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-21 21:36:58
+ * @LastEditTime: 2021-06-22 10:13:20
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -63,99 +63,31 @@ static void open_device(rdma_context_t* context)
     if (_num_dev == 0) {
         printf("|--ibv_get_device_list failed.\n");
         exit(1);
-    } else {
+    }
+
+    for (int i = 0; i < _num_dev; i++) {
         printf("|--ibv_get_device_list ok.[%d]\n", _num_dev);
-        _dev = _dev_list[1]; // used first
-    }
+        _dev = _dev_list[i]; // used first
 
-    // 1.2 打开RDMA设备
-    context->ctx = ibv_open_device(_dev);
-    if (context->ctx == NULL) {
-        printf("|--ibv_open_device failed.\n");
-        exit(2);
-    } else {
+        // 1.2 打开RDMA设备
+        context->ctx = ibv_open_device(_dev);
+        if (context->ctx == NULL) {
+            printf("|--ibv_open_device failed.\n");
+            exit(2);
+        }
         printf("|--ibv_open_device ok.\n");
-    }
 
-    // 1.3 返回RDMA设备的端口的属性。
-    // struct ibv_port_attr {
-    //            enum ibv_port_state     state;          /* Logical port state */
-    //            enum ibv_mtu            max_mtu;        /* Max MTU supported by port */
-    //            enum ibv_mtu            active_mtu;     /* Actual MTU */
-    //            int                     gid_tbl_len;    /* Length of source GID table */
-    //            uint32_t                port_cap_flags; /* Port capabilities */
-    //            uint32_t                max_msg_sz;     /* Maximum message size */
-    //            uint32_t                bad_pkey_cntr;  /* Bad P_Key counter */
-    //            uint32_t                qkey_viol_cntr; /* Q_Key violation counter */
-    //            uint16_t                pkey_tbl_len;   /* Length of partition table */
-    //            uint16_t                lid;            /* Base port LID */
-    //            uint16_t                sm_lid;         /* SM LID */
-    //            uint8_t                 lmc;            /* LMC of LID */
-    //            uint8_t                 max_vl_num;     /* Maximum number of VLs */
-    //            uint8_t                 sm_sl;          /* SM service level */
-    //            uint8_t                 subnet_timeout; /* Subnet propagation delay */
-    //            uint8_t                 init_type_reply;/* Type of initialization performed by SM */
-    //            uint8_t                 active_width;   /* Currently active link width */
-    //            uint8_t                 active_speed;   /* Currently active link speed */
-    //            uint8_t                 phys_state;     /* Physical port state */
-    //            uint8_t                 link_layer;     /* link layer protocol of the port */
-    //            uint8_t                 flags;          /* Port flags */
-    //            uint16_t                port_cap_flags2;/* Port capabilities */
-    // };
-    _res = ibv_query_port(context->ctx, 1, &context->port_attr);
-    if (_res) {
-        printf("|--ibv_query_port failed.\n");
-    } else {
+        _res = ibv_query_port(context->ctx, 1, &context->port_attr);
+        if (_res) {
+            printf("|--ibv_query_port failed.\n");
+        }
         printf("|--ibv_query_port ok.\n");
-    }
+        printf("|----[lid:%d]\n", context->port_attr.lid;);
 
-    // 1.4 查询设备获得设备属性
-    // struct ibv_device_attr {
-    //           char                    fw_ver[64];             /* FW version */
-    //           uint64_t                node_guid;              /* Node GUID (in network byte order) */
-    //           uint64_t                sys_image_guid;         /* System image GUID (in network byte order) */
-    //           uint64_t                max_mr_size;            /* Largest contiguous block that can be registered */
-    //           uint64_t                page_size_cap;          /* Supported memory shift sizes */
-    //           uint32_t                vendor_id;              /* Vendor ID, per IEEE */
-    //           uint32_t                vendor_part_id;         /* Vendor supplied part ID */
-    //           uint32_t                hw_ver;                 /* Hardware version */
-    //           int                     max_qp;                 /* Maximum number of supported QPs */
-    //           int                     max_qp_wr;              /* Maximum number of outstanding WR on any work queue */
-    //           unsigned int            device_cap_flags;       /* HCA capabilities mask */
-    //           int                     max_sge;                /* Maximum number of s/g per WR for SQ & RQ of QP for non RDMA Read operations */
-    //           int                     max_sge_rd;             /* Maximum number of s/g per WR for RDMA Read operations */
-    //           int                     max_cq;                 /* Maximum number of supported CQs */
-    //           int                     max_cqe;                /* Maximum number of CQE capacity per CQ */
-    //           int                     max_mr;                 /* Maximum number of supported MRs */
-    //           int                     max_pd;                 /* Maximum number of supported PDs */
-    //           int                     max_qp_rd_atom;         /* Maximum number of RDMA Read & Atomic operations that can be outstanding per QP */
-    //           int                     max_ee_rd_atom;         /* Maximum number of RDMA Read & Atomic operations that can be outstanding per EEC */
-    //           int                     max_res_rd_atom;        /* Maximum number of resources used for RDMA Read & Atomic operations by this HCA as the Target */
-    //           int                     max_qp_init_rd_atom;    /* Maximum depth per QP for initiation of RDMA Read & Atomic operations */
-    //           int                     max_ee_init_rd_atom;    /* Maximum depth per EEC for initiation of RDMA Read & Atomic operations */
-    //           enum ibv_atomic_cap     atomic_cap;             /* Atomic operations support level */
-    //           int                     max_ee;                 /* Maximum number of supported EE contexts */
-    //           int                     max_rdd;                /* Maximum number of supported RD domains */
-    //           int                     max_mw;                 /* Maximum number of supported MWs */
-    //           int                     max_raw_ipv6_qp;        /* Maximum number of supported raw IPv6 datagram QPs */
-    //           int                     max_raw_ethy_qp;        /* Maximum number of supported Ethertype datagram QPs */
-    //           int                     max_mcast_grp;          /* Maximum number of supported multicast groups */
-    //           int                     max_mcast_qp_attach;    /* Maximum number of QPs per multicast group which can be attached */
-    //           int                     max_total_mcast_qp_attach;/* Maximum number of QPs which can be attached to multicast groups */
-    //           int                     max_ah;                 /* Maximum number of supported address handles */
-    //           int                     max_fmr;                /* Maximum number of supported FMRs */
-    //           int                     max_map_per_fmr;        /* Maximum number of (re)maps per FMR before an unmap operation in required */
-    //           int                     max_srq;                /* Maximum number of supported SRQs */
-    //           int                     max_srq_wr;             /* Maximum number of WRs per SRQ */
-    //           int                     max_srq_sge;            /* Maximum number of s/g per SRQ */
-    //           uint16_t                max_pkeys;              /* Maximum number of partitions */
-    //           uint8_t                 local_ca_ack_delay;     /* Local CA ack delay */
-    //           uint8_t                 phys_port_cnt;          /* Number of physical ports */
-    // };
-    _res = ibv_query_device(context->ctx, &context->dev_attr);
-    if (_res) {
-        printf("|--ibv_query_device failed.\n");
-    } else {
+        _res = ibv_query_device(context->ctx, &context->dev_attr);
+        if (_res) {
+            printf("|--ibv_query_device failed.\n");
+        }
         printf("|--ibv_query_device ok.\n");
         printf("|----[VERSION:%d]\n", context->dev_attr.hw_ver);
         printf("|----[MAX_NUM_CQ:%d][MAX_CQE:%d]\n", context->dev_attr.max_cq, context->dev_attr.max_cqe);
