@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-22 13:22:05
+ * @LastEditTime: 2021-06-22 13:25:59
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -39,6 +39,7 @@ public:
     struct ibv_device_attr dev_attr;
     qp_info_t* local_qp;
     qp_info_t* remote_qp;
+    union ibv_gid gid;
 
 public: // need initlizate
     int num_qps;
@@ -72,20 +73,27 @@ static void open_device(rdma_context_t* context)
     context->ctx = ibv_open_device(_dev);
     if (context->ctx == NULL) {
         printf("|--ibv_open_device failed.\n");
-        exit(2);
+        exit(1);
     }
     printf("|--ibv_open_device ok.\n");
-
     _res = ibv_query_port(context->ctx, 1, &context->port_attr);
     if (_res) {
         printf("|--ibv_query_port failed.\n");
+        exit(1);
     }
     printf("|--ibv_query_port ok.\n");
     printf("|----[lid:%d]\n", context->port_attr.lid);
 
+    _res = ibv_query_gid(context, 1, 0, &context->gid);
+    if (_res) {
+        printf("|--ibv_query_gid failed.\n");
+        exit(1);
+    }
+
     _res = ibv_query_device(context->ctx, &context->dev_attr);
     if (_res) {
         printf("|--ibv_query_device failed.\n");
+        exit(1);
     }
     printf("|--ibv_query_device ok.\n");
     printf("|----[VERSION:%d]\n", context->dev_attr.hw_ver);
