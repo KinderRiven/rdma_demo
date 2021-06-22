@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-22 13:46:45
+ * @LastEditTime: 2021-06-22 13:55:01
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -297,7 +297,7 @@ static int modify_qp_to_rtr(struct ibv_qp* qp, uint32_t remote_qpn, uint16_t dli
     memset(&attr, 0, sizeof(attr));
 
     attr.qp_state = IBV_QPS_RTR;
-    attr.path_mtu = IBV_MTU_256;
+    attr.path_mtu = IBV_MTU_4096;
     attr.dest_qp_num = remote_qpn;
     attr.rq_psn = 0;
     attr.max_dest_rd_atomic = 1;
@@ -323,15 +323,14 @@ static int modify_qp_to_rtr(struct ibv_qp* qp, uint32_t remote_qpn, uint16_t dli
 // Transition a QP from the RTR to RTS state
 static int modify_qp_to_rts(struct ibv_qp* qp)
 {
-    struct ibv_qp_attr attr;
     int flags;
-
+    struct ibv_qp_attr attr;
     memset(&attr, 0, sizeof(attr));
 
     attr.qp_state = IBV_QPS_RTS;
-    attr.timeout = 0x12; // 18
-    attr.retry_cnt = 6;
-    attr.rnr_retry = 0;
+    attr.timeout = 12; // 18
+    attr.retry_cnt = 7;
+    attr.rnr_retry = 7;
     attr.sq_psn = 0;
     attr.max_rd_atomic = 1;
 
