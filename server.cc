@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-22 13:37:26
+ * @LastEditTime: 2021-06-22 13:46:38
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -377,12 +377,12 @@ static void connect_qpair(rdma_context_t* context)
     printf("|--modify_qp_to_init = %d. %s.\n", ret, strerror(ret));
 
     // modify the QP to RTR
-    ret = modify_qp_to_rtr(context->qp[0], remote_qp_info->qp_num, remote_qp_info->lid, (uint8_t*)(&remote_qp_info->gid));
-    printf("|--modify_qp_to_rtr = %d. %s.\n", ret, strerror(ret));
+    // ret = modify_qp_to_rtr(context->qp[0], remote_qp_info->qp_num, remote_qp_info->lid, (uint8_t*)(&remote_qp_info->gid));
+    // printf("|--modify_qp_to_rtr = %d. %s.\n", ret, strerror(ret));
 
     // modify QP state to RTS
-    // ret = modify_qp_to_rts(context->qp[0]);
-    // printf("|--modify_qp_to_rts = %d. %s.\n", ret, strerror(ret));
+    ret = modify_qp_to_rts(context->qp[0]);
+    printf("|--modify_qp_to_rts = %d. %s.\n", ret, strerror(ret));
 }
 
 // ------------------ Send/Recv -------------------- //
