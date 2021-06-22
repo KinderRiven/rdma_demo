@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-22 13:10:50
+ * @LastEditTime: 2021-06-22 13:20:40
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -452,8 +452,8 @@ static void connect_qpair(rdma_context_t* context)
     printf("|--modify_qp_to_rtr = %d\n", ret);
 
     // modify QP state to RTS
-    ret = modify_qp_to_rts(context->qp[0]);
-    printf("|--modify_qp_to_rts = %d\n", ret);
+    // ret = modify_qp_to_rts(context->qp[0]);
+    // printf("|--modify_qp_to_rts = %d\n", ret);
 }
 
 // ------------------ Send/Recv -------------------- //
