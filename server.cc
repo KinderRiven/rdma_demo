@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-22 13:32:37
+ * @LastEditTime: 2021-06-22 13:33:32
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -90,7 +90,7 @@ static void open_device(rdma_context_t* context)
         exit(1);
     }
     for (int i = 0; i < 16; i++) {
-        printf("%c", context->gid.raw[i]);
+        printf("%d", context->gid.raw[i]);
     }
     printf("\n");
 
