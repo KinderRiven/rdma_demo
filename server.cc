@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-22 10:59:23
+ * @LastEditTime: 2021-06-22 11:05:30
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -250,7 +250,6 @@ static int modify_qp_to_init(struct ibv_qp* qp)
     attr.qp_access_flags = IBV_ACCESS_LOCAL_WRITE | IBV_ACCESS_REMOTE_READ | IBV_ACCESS_REMOTE_WRITE;
 
     flags = IBV_QP_STATE | IBV_QP_PKEY_INDEX | IBV_QP_PORT | IBV_QP_ACCESS_FLAGS;
-
     return ibv_modify_qp(qp, &attr, flags);
 }
 
@@ -280,6 +279,7 @@ static int modify_qp_to_rtr(struct ibv_qp* qp, uint32_t remote_qpn, uint16_t dli
 
     attr.ah_attr.is_global = 1;
     attr.ah_attr.port_num = 1;
+
     memcpy(&attr.ah_attr.grh.dgid, dgid, 16);
     attr.ah_attr.grh.flow_label = 0;
     attr.ah_attr.grh.hop_limit = 1;
@@ -386,8 +386,8 @@ static void connect_qpair(rdma_context_t* context)
     printf("|--modify_qp_to_init = %d. %s.\n", ret, strerror(ret));
 
     // modify the QP to RTR
-    ret = modify_qp_to_rtr(context->qp[0], remote_qp_info->qp_num, remote_qp_info->lid, remote_qp_info->gid);
-    printf("|--modify_qp_to_rtr = %d. %s.\n", ret, strerror(ret));
+    // ret = modify_qp_to_rtr(context->qp[0], remote_qp_info->qp_num, remote_qp_info->lid, remote_qp_info->gid);
+    // printf("|--modify_qp_to_rtr = %d. %s.\n", ret, strerror(ret));
 
     // modify QP state to RTS
     ret = modify_qp_to_rts(context->qp[0]);
