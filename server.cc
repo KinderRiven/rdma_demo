@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-22 10:30:53
+ * @LastEditTime: 2021-06-22 10:31:01
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -188,9 +188,7 @@ static void register_memory_region(rdma_context_t* context)
 static void rdma_init(rdma_context_t* context)
 {
     open_device(context);
-
     create_qpair(context);
-
     register_memory_region(context);
 }
 
