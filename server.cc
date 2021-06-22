@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-22 12:59:02
+ * @LastEditTime: 2021-06-22 13:18:50
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -125,24 +125,6 @@ static void create_qpair(rdma_context_t* context)
     printf("|--ibv_create_srq ok.\n");
 
     struct ibv_qp_init_attr qp_init_attr;
-    /*
-        struct ibv_qp_init_attr {
-            void		        *qp_context;
-            struct ibv_cq	    *send_cq;
-            struct ibv_cq	    *recv_cq;
-            struct ibv_srq	    *srq;
-            struct ibv_qp_cap	cap;
-            enum ibv_qp_type	qp_type;
-            int			        sq_sig_all;
-        }; 
-        struct ibv_qp_cap {
-            uint32_t		max_send_wr;
-            uint32_t		max_recv_wr;
-            uint32_t		max_send_sge;
-            uint32_t		max_recv_sge;
-            uint32_t		max_inline_data;
-        }
-    */
     memset(&qp_init_attr, 0, sizeof(qp_init_attr));
     // qp_init_attr.qp_context = context->ctx;
     qp_init_attr.send_cq = context->cq;
@@ -266,23 +248,21 @@ static int modify_qp_to_rtr(struct ibv_qp* qp, uint32_t remote_qpn, uint16_t dli
     memset(&attr, 0, sizeof(attr));
 
     attr.qp_state = IBV_QPS_RTR;
-    attr.path_mtu = IBV_MTU_256;
+    // attr.path_mtu = IBV_MTU_256;
     attr.dest_qp_num = remote_qpn;
     attr.rq_psn = 0;
-    attr.max_dest_rd_atomic = 1;
-    attr.min_rnr_timer = 0x12;
+    // attr.max_dest_rd_atomic = 1;
+    // attr.min_rnr_timer = 0x12;
     attr.ah_attr.is_global = 0;
     attr.ah_attr.dlid = dlid;
     attr.ah_attr.sl = 0;
     attr.ah_attr.src_path_bits = 0;
     attr.ah_attr.port_num = 1;
-    attr.ah_attr.is_global = 1;
-    attr.ah_attr.port_num = 1;
 
     memcpy(&attr.ah_attr.grh.dgid, dgid, 16);
     attr.ah_attr.grh.flow_label = 0;
     attr.ah_attr.grh.hop_limit = 1;
-    attr.ah_attr.grh.sgid_index = 2;
+    attr.ah_attr.grh.sgid_index = 0;
     attr.ah_attr.grh.traffic_class = 0;
 
     flags = IBV_QP_STATE | IBV_QP_AV | IBV_QP_PATH_MTU | IBV_QP_DEST_QPN | IBV_QP_RQ_PSN | IBV_QP_MAX_DEST_RD_ATOMIC | IBV_QP_MIN_RNR_TIMER;
