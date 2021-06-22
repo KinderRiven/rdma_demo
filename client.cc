@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-22 13:35:39
+ * @LastEditTime: 2021-06-22 13:37:13
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -89,7 +89,7 @@ static void open_device(rdma_context_t* context)
         exit(1);
     }
     for (int i = 0; i < 16; i++) {
-        printf("%d", context->gid.raw[i]);
+        printf("[%d]", context->gid.raw[i]);
     }
     printf("\n");
 
@@ -291,7 +291,7 @@ static int modify_qp_to_rtr(struct ibv_qp* qp, uint32_t remote_qpn, uint16_t dli
 
     printf("[num_qp:%d][lid:%d][gid:", remote_qpn, dlid);
     for (int i = 0; i < 16; i++) {
-        printf("%c", dgid[i]);
+        printf("[%d]", dgid[i]);
     }
     printf("]\n");
     memset(&attr, 0, sizeof(attr));
