@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-22 13:18:50
+ * @LastEditTime: 2021-06-22 13:20:11
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -251,8 +251,8 @@ static int modify_qp_to_rtr(struct ibv_qp* qp, uint32_t remote_qpn, uint16_t dli
     // attr.path_mtu = IBV_MTU_256;
     attr.dest_qp_num = remote_qpn;
     attr.rq_psn = 0;
-    // attr.max_dest_rd_atomic = 1;
-    // attr.min_rnr_timer = 0x12;
+    attr.max_dest_rd_atomic = 1;
+    attr.min_rnr_timer = 0x12;
     attr.ah_attr.is_global = 0;
     attr.ah_attr.dlid = dlid;
     attr.ah_attr.sl = 0;
