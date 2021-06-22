@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-22 13:33:32
+ * @LastEditTime: 2021-06-22 13:34:39
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -368,7 +368,7 @@ static void connect_qpair(rdma_context_t* context)
     local_qp_info->rkey = context->mr->rkey;
     local_qp_info->qp_num = context->num_qps;
     local_qp_info->lid = context->port_attr.lid;
-    memcpy(local_qp_info->gid, context->gid, sizeof(context->gid));
+    memcpy(local_qp_info->gid, (void*)(&context->gid), sizeof(context->gid));
     sz = sock_write(peer_sockfd, local_qp_info, sizeof(qp_info_t));
     printf("|--sock_write[%zu/%zu]\n", sz, sizeof(qp_info_t));
 
