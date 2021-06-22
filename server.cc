@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-22 10:14:46
+ * @LastEditTime: 2021-06-22 10:15:46
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -58,42 +58,40 @@ static void open_device(rdma_context_t* context)
     struct ibv_device* _dev = NULL;
     struct ibv_device** _dev_list = NULL;
 
-    // 1.1 获得RDMA列表
+    // 获得RDMA列表
     _dev_list = ibv_get_device_list(&_num_dev);
     if (_num_dev == 0) {
         printf("|--ibv_get_device_list failed.\n");
         exit(1);
     }
 
-    for (int i = 0; i < _num_dev; i++) {
-        printf("|--ibv_get_device_list ok.[%d/%d]\n", i, _num_dev);
-        _dev = _dev_list[i]; // used first
+    printf("|--ibv_get_device_list ok.[%d]\n", _num_dev);
+    _dev = _dev_list[1]; // used first
 
-        // 1.2 打开RDMA设备
-        context->ctx = ibv_open_device(_dev);
-        if (context->ctx == NULL) {
-            printf("|--ibv_open_device failed.\n");
-            exit(2);
-        }
-        printf("|--ibv_open_device ok.\n");
-
-        _res = ibv_query_port(context->ctx, 1, &context->port_attr);
-        if (_res) {
-            printf("|--ibv_query_port failed.\n");
-        }
-        printf("|--ibv_query_port ok.\n");
-        printf("|----[lid:%d]\n", context->port_attr.lid);
-
-        _res = ibv_query_device(context->ctx, &context->dev_attr);
-        if (_res) {
-            printf("|--ibv_query_device failed.\n");
-        }
-        printf("|--ibv_query_device ok.\n");
-        printf("|----[VERSION:%d]\n", context->dev_attr.hw_ver);
-        printf("|----[MAX_NUM_CQ:%d][MAX_CQE:%d]\n", context->dev_attr.max_cq, context->dev_attr.max_cqe);
-        printf("|----[MAX_QP_WR:%d]\n", context->dev_attr.max_qp_wr);
-        printf("|----[MAX_NUM_MR:%dMB][MR_SIZE:%lluGB]\n", context->dev_attr.max_mr / (1024 * 1024), context->dev_attr.max_mr_size / (1024UL * 1024 * 1024));
+    // 打开RDMA设备
+    context->ctx = ibv_open_device(_dev);
+    if (context->ctx == NULL) {
+        printf("|--ibv_open_device failed.\n");
+        exit(2);
     }
+    printf("|--ibv_open_device ok.\n");
+
+    _res = ibv_query_port(context->ctx, 1, &context->port_attr);
+    if (_res) {
+        printf("|--ibv_query_port failed.\n");
+    }
+    printf("|--ibv_query_port ok.\n");
+    printf("|----[lid:%d]\n", context->port_attr.lid);
+
+    _res = ibv_query_device(context->ctx, &context->dev_attr);
+    if (_res) {
+        printf("|--ibv_query_device failed.\n");
+    }
+    printf("|--ibv_query_device ok.\n");
+    printf("|----[VERSION:%d]\n", context->dev_attr.hw_ver);
+    printf("|----[MAX_NUM_CQ:%d][MAX_CQE:%d]\n", context->dev_attr.max_cq, context->dev_attr.max_cqe);
+    printf("|----[MAX_QP_WR:%d]\n", context->dev_attr.max_qp_wr);
+    printf("|----[MAX_NUM_MR:%dMB][MR_SIZE:%lluGB]\n", context->dev_attr.max_mr / (1024 * 1024), context->dev_attr.max_mr_size / (1024UL * 1024 * 1024));
 }
 
 static void create_qpair(rdma_context_t* context)
