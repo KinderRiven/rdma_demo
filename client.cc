@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-22 10:53:41
+ * @LastEditTime: 2021-06-22 10:59:15
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -339,7 +339,6 @@ static int modify_qp_to_init(struct ibv_qp* qp)
     attr.qp_access_flags = IBV_ACCESS_LOCAL_WRITE | IBV_ACCESS_REMOTE_READ | IBV_ACCESS_REMOTE_WRITE;
 
     flags = IBV_QP_STATE | IBV_QP_PKEY_INDEX | IBV_QP_PORT | IBV_QP_ACCESS_FLAGS;
-
     return ibv_modify_qp(qp, &attr, flags);
 }
 
@@ -353,7 +352,7 @@ static int modify_qp_to_rtr(struct ibv_qp* qp, uint32_t remote_qpn, uint16_t dli
     for (int i = 0; i < 16; i++) {
         printf("%c", dgid[i]);
     }
-    pritnf("\n");
+    printf("\n");
     memset(&attr, 0, sizeof(attr));
 
     attr.qp_state = IBV_QPS_RTR;
@@ -377,7 +376,6 @@ static int modify_qp_to_rtr(struct ibv_qp* qp, uint32_t remote_qpn, uint16_t dli
     attr.ah_attr.grh.traffic_class = 0;
 
     flags = IBV_QP_STATE | IBV_QP_AV | IBV_QP_PATH_MTU | IBV_QP_DEST_QPN | IBV_QP_RQ_PSN | IBV_QP_MAX_DEST_RD_ATOMIC | IBV_QP_MIN_RNR_TIMER;
-
     return ibv_modify_qp(qp, &attr, flags);
 }
 
