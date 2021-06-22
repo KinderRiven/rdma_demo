@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-22 10:13:20
+ * @LastEditTime: 2021-06-22 10:14:04
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -82,7 +82,7 @@ static void open_device(rdma_context_t* context)
             printf("|--ibv_query_port failed.\n");
         }
         printf("|--ibv_query_port ok.\n");
-        printf("|----[lid:%d]\n", context->port_attr.lid;);
+        printf("|----[lid:%d]\n", context->port_attr.lid);
 
         _res = ibv_query_device(context->ctx, &context->dev_attr);
         if (_res) {
