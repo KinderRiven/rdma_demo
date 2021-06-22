@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-22 10:15:46
+ * @LastEditTime: 2021-06-22 10:29:25
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -103,18 +103,16 @@ static void create_qpair(rdma_context_t* context)
     if (context->pd == NULL) {
         printf("|--ibv_alloc_pd failed.\n");
         exit(1);
-    } else {
-        printf("|--ibv_alloc_pd ok.\n");
     }
+    printf("|--ibv_alloc_pd ok.\n");
 
     // create completion queue (cq)
     context->cq = ibv_create_cq(context->ctx, context->dev_attr.max_cqe, NULL, NULL, 0);
     if (context->cq == NULL) {
         printf("|--ibv_create_cq failed.\n");
         exit(1);
-    } else {
-        printf("|--ibv_create_cq ok.\n");
     }
+    printf("|--ibv_create_cq ok.\n");
 
     // create shared received queue (srq)
     struct ibv_srq_init_attr srq_init_attr;
@@ -123,9 +121,8 @@ static void create_qpair(rdma_context_t* context)
     context->srq = ibv_create_srq(context->pd, &srq_init_attr);
     if (context->srq == NULL) {
         printf("|--ibv_create_srq failed.\n");
-    } else {
-        printf("|--ibv_create_srq ok.\n");
     }
+    printf("|--ibv_create_srq ok.\n");
 
     struct ibv_qp_init_attr qp_init_attr;
     /*
@@ -161,9 +158,9 @@ static void create_qpair(rdma_context_t* context)
         context->qp[i] = ibv_create_qp(context->pd, &qp_init_attr);
         if (context->qp[i] == NULL) {
             printf("|--ibv_create_qp failed.[%s]\n", strerror(errno));
-        } else {
-            printf("|--ibv_create_qp ok.[%d]\n", i);
+            exit(1);
         }
+        printf("|--ibv_create_qp ok.[%d/%d]\n", i, context->num_qps);
     }
 }
 
@@ -275,8 +272,7 @@ static int modify_qp_to_init(struct ibv_qp* qp)
 }
 
 // Transition a QP from the INIT to RTR state, using the specified QP number
-static int modify_qp_to_rtr(struct ibv_qp* qp, uint32_t remote_qpn,
-    uint16_t dlid, uint8_t* dgid)
+static int modify_qp_to_rtr(struct ibv_qp* qp, uint32_t remote_qpn, uint16_t dlid, uint8_t* dgid)
 {
     struct ibv_qp_attr attr;
     int flags;
@@ -304,7 +300,6 @@ static int modify_qp_to_rtr(struct ibv_qp* qp, uint32_t remote_qpn,
     // attr.ah_attr.grh.traffic_class = 0;
 
     flags = IBV_QP_STATE | IBV_QP_AV | IBV_QP_PATH_MTU | IBV_QP_DEST_QPN | IBV_QP_RQ_PSN | IBV_QP_MAX_DEST_RD_ATOMIC | IBV_QP_MIN_RNR_TIMER;
-
     return ibv_modify_qp(qp, &attr, flags);
 }
 
@@ -324,7 +319,6 @@ static int modify_qp_to_rts(struct ibv_qp* qp)
     attr.max_rd_atomic = 1;
 
     flags = IBV_QP_STATE | IBV_QP_TIMEOUT | IBV_QP_RETRY_CNT | IBV_QP_RNR_RETRY | IBV_QP_SQ_PSN | IBV_QP_MAX_QP_RD_ATOMIC;
-
     return ibv_modify_qp(qp, &attr, flags);
 }
 
