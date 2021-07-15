@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-07-15 16:49:28
+ * @LastEditTime: 2021-07-15 17:02:14
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -277,18 +277,20 @@ static int modify_qp_to_rtr(struct ibv_qp* qp, uint32_t remote_qpn, uint16_t dli
     attr.dest_qp_num = remote_qpn;
     attr.rq_psn = 0;
     attr.max_dest_rd_atomic = 1;
-    attr.min_rnr_timer = 12;
+    attr.min_rnr_timer = 0x12;
     attr.ah_attr.is_global = 0;
     attr.ah_attr.dlid = dlid;
     attr.ah_attr.sl = 0;
     attr.ah_attr.src_path_bits = 0;
     attr.ah_attr.port_num = 1;
 
-    // memcpy(&attr.ah_attr.grh.dgid, dgid, 16);
-    // attr.ah_attr.grh.flow_label = 0;
-    // attr.ah_attr.grh.hop_limit = 1;
-    // attr.ah_attr.grh.sgid_index = 0;
-    // attr.ah_attr.grh.traffic_class = 0;
+    attr.ah_attr.is_global = 1;
+    attr.ah_attr.port_num = 1;
+    memcpy(&attr.ah_attr.grh.dgid, dgid, 16);
+    attr.ah_attr.grh.flow_label = 0;
+    attr.ah_attr.grh.hop_limit = 1;
+    attr.ah_attr.grh.sgid_index = config.gid_idx;
+    attr.ah_attr.grh.traffic_class = 0;
 
     flags = IBV_QP_STATE | IBV_QP_AV | IBV_QP_PATH_MTU | IBV_QP_DEST_QPN | IBV_QP_RQ_PSN | IBV_QP_MAX_DEST_RD_ATOMIC | IBV_QP_MIN_RNR_TIMER;
     return ibv_modify_qp(qp, &attr, flags);
