@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-22 13:54:45
+ * @LastEditTime: 2021-07-15 16:47:23
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -17,6 +17,9 @@
 #include <string.h>
 #include <sys/socket.h>
 #include <unistd.h>
+
+static int g_gids[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xff, 0xff, 0x0a, 0x00, 0x00, 0x30 };
+
 
 struct qp_info_t {
     uint64_t addr; // buffer address
@@ -90,7 +93,11 @@ static void open_device(rdma_context_t* context)
         exit(1);
     }
     for (int i = 0; i < 16; i++) {
-        printf("[%d]", context->gid.raw[i]);
+        context->gid.raw[i] = g_gids[i];
+        printf("%x", context->gid.raw[i]);
+        if (i & 1) {
+            printf(":");
+        }
     }
     printf("\n");
 
