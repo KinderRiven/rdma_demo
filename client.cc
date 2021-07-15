@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-07-15 16:53:23
+ * @LastEditTime: 2021-07-15 16:55:52
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -170,7 +170,7 @@ static void create_qpair(rdma_context_t* context)
         }
     */
     memset(&qp_init_attr, 0, sizeof(qp_init_attr));
-    // qp_init_attr.qp_context = context->ctx;
+    qp_init_attr.qp_context = context->ctx;
     qp_init_attr.send_cq = context->cq;
     qp_init_attr.recv_cq = context->cq;
     qp_init_attr.srq = context->srq;
