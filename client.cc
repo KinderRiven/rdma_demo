@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-07-15 16:42:30
+ * @LastEditTime: 2021-07-15 16:46:12
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -19,6 +19,8 @@
 #include <unistd.h>
 
 #define MSG_SIZE (64)
+
+static int g_gids[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xff, 0xff, 0x0a, 0x00, 0x00, 0x30 };
 
 struct qp_info_t {
     uint64_t addr; // buffer address
@@ -64,7 +66,6 @@ static void open_device(rdma_context_t* context)
         printf("|--ibv_get_device_list failed.\n");
         exit(1);
     }
-
     printf("|--ibv_get_device_list ok.[%d]\n", _num_dev);
     _dev = _dev_list[1]; // used first
 
@@ -88,7 +89,9 @@ static void open_device(rdma_context_t* context)
         printf("|--ibv_query_gid failed.\n");
         exit(1);
     }
+
     for (int i = 0; i < 16; i++) {
+        context->gid.raw[i] = g_gids[i];
         printf("%x", context->gid.raw[i]);
         if (i & 1) {
             printf(":");
