@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-07-15 17:01:59
+ * @LastEditTime: 2021-07-15 17:02:42
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -328,7 +328,7 @@ static int modify_qp_to_rtr(struct ibv_qp* qp, uint32_t remote_qpn, uint16_t dli
     memcpy(&attr.ah_attr.grh.dgid, dgid, 16);
     attr.ah_attr.grh.flow_label = 0;
     attr.ah_attr.grh.hop_limit = 1;
-    attr.ah_attr.grh.sgid_index = config.gid_idx;
+    attr.ah_attr.grh.sgid_index = 0;
     attr.ah_attr.grh.traffic_class = 0;
 
     flags = IBV_QP_STATE | IBV_QP_AV | IBV_QP_PATH_MTU | IBV_QP_DEST_QPN | IBV_QP_RQ_PSN | IBV_QP_MAX_DEST_RD_ATOMIC | IBV_QP_MIN_RNR_TIMER;
