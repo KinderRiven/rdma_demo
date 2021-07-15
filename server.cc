@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-07-15 17:06:34
+ * @LastEditTime: 2021-07-15 17:07:45
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -267,7 +267,10 @@ static int modify_qp_to_rtr(struct ibv_qp* qp, uint32_t remote_qpn, uint16_t dli
     int flags;
     printf("[num_qp:%d][lid:%d][gid:", remote_qpn, dlid);
     for (int i = 0; i < 16; i++) {
-        printf("%02x:", dgid[i]);
+        printf("%02x", dgid[i]);
+        if (i & 1) {
+            printf(":");
+        }
     }
     printf("]\n");
     memset(&attr, 0, sizeof(attr));
