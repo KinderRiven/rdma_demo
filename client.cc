@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-06-22 13:55:01
+ * @LastEditTime: 2021-07-15 16:42:30
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -89,7 +89,10 @@ static void open_device(rdma_context_t* context)
         exit(1);
     }
     for (int i = 0; i < 16; i++) {
-        printf("[%d]", context->gid.raw[i]);
+        printf("%x", context->gid.raw[i]);
+        if (i & 1) {
+            printf(":");
+        }
     }
     printf("\n");
 
@@ -216,10 +219,13 @@ static void register_memory_region(rdma_context_t* context)
 
 static void rdma_init(rdma_context_t* context)
 {
+    // 打开设备
     open_device(context);
 
+    // 创建QP
     create_qpair(context);
 
+    // 注册内存区域
     register_memory_region(context);
 }
 
@@ -301,7 +307,7 @@ static int modify_qp_to_rtr(struct ibv_qp* qp, uint32_t remote_qpn, uint16_t dli
     attr.dest_qp_num = remote_qpn;
     attr.rq_psn = 0;
     attr.max_dest_rd_atomic = 1;
-    attr.min_rnr_timer = 0x12;
+    attr.min_rnr_timer = 12;
     attr.ah_attr.is_global = 0;
     attr.ah_attr.dlid = dlid;
     attr.ah_attr.sl = 0;
