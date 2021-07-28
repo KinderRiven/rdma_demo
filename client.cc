@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-07-28 15:48:43
+ * @LastEditTime: 2021-07-28 16:10:17
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -419,10 +419,9 @@ static int post_send(rdma_context_t* context, int opcode)
     struct ibv_send_wr sr;
     struct ibv_sge sge;
     struct ibv_send_wr* bad_wr = NULL;
-    qp_info_t* qp_info = context->remote_qp;
 
     // prepare the scatter / gather entry
-    memset(&sge, 0, sizeof(sge));
+    memset(&sge, 0, sizeof(sge)); // local
     memset((void*)context->ib_buf, 0xff, MSG_SIZE); // write
     sge.addr = (uintptr_t)context->ib_buf;
     sge.length = MSG_SIZE;
@@ -437,7 +436,8 @@ static int post_send(rdma_context_t* context, int opcode)
     sr.opcode = (ibv_wr_opcode)opcode;
     sr.send_flags = IBV_SEND_SIGNALED;
 
-    if (opcode != IBV_WR_SEND) {
+    qp_info_t* qp_info = context->remote_qp;
+    if (opcode != IBV_WR_SEND) { // remote
         sr.wr.rdma.remote_addr = qp_info->addr;
         sr.wr.rdma.rkey = qp_info->rkey;
     }
@@ -513,11 +513,11 @@ int main(int argc, char** argv)
     int ret = post_send(&_ctx, IBV_WR_RDMA_WRITE);
     printf("post_send = %d\n", ret);
 
-    ret = post_receive(&_ctx);
-    printf("post_receive = %d\n", ret);
-    if (!ret) {
-        printf("data = %llu\n", *(uint64_t*)_ctx.remote_qp->addr);
-    }
+    // ret = post_receive(&_ctx);
+    // printf("post_receive = %d\n", ret);
+    // if (!ret) {
+    //    printf("data = %llu\n", *(uint64_t*)_ctx.remote_qp->addr);
+    // }
     poll_cq(&_ctx);
     return 0;
 }
