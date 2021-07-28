@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-07-28 15:24:10
+ * @LastEditTime: 2021-07-28 15:39:00
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -51,8 +51,6 @@ public: // need initlizate
     int num_qps;
     size_t ib_buf_size;
 };
-
-rdma_context_t g_context;
 
 static void open_device(rdma_context_t* context)
 {
@@ -516,7 +514,7 @@ int main(int argc, char** argv)
 
     ret = post_receive(&_ctx);
     printf("post_receive = %d\n", ret);
-    printf("data = %llu\n", *(uint64_t*)g_context.remote_qp->addr);
+    printf("data = %llu\n", *(uint64_t*)_ctx.remote_qp->addr);
 
     poll_cq(&_ctx);
     return 0;
