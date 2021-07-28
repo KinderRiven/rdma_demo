@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-07-28 15:23:45
+ * @LastEditTime: 2021-07-28 15:24:10
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -514,7 +514,7 @@ int main(int argc, char** argv)
     int ret = post_send(&_ctx, IBV_WR_RDMA_WRITE);
     printf("post_send = %d\n", ret);
 
-    ret = post_receive(&_ctx, IBV_WR_RDMA_WRITE);
+    ret = post_receive(&_ctx);
     printf("post_receive = %d\n", ret);
     printf("data = %llu\n", *(uint64_t*)g_context.remote_qp->addr);
 
