@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-07-28 10:26:10
+ * @LastEditTime: 2021-07-28 10:32:06
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -18,7 +18,8 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-static int g_gids[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xff, 0xff, 0x0a, 0x00, 0x00, 0x30 };
+// static int g_gids[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xff, 0xff, 0x0a, 0x00, 0x00, 0x30 };
+static int g_gids[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xff, 0xff, 0x0a, 0x00, 0x00, 0x28 };
 
 struct qp_info_t {
     uint64_t addr; // buffer address
@@ -55,29 +56,33 @@ rdma_context_t g_context;
 // ------------------ RDMA initlizate ------------------ //
 static void open_device(rdma_context_t* context)
 {
-    printf("|open_device.\n");
+    /* ------------------------------------------- */
+    printf("----------- Open Device -----------\n");
     int _res;
     int _num_dev = 0;
     struct ibv_device* _dev = NULL;
     struct ibv_device** _dev_list = NULL;
 
+    /* ------------------------------------------- */
     // 获得RDMA列表
     _dev_list = ibv_get_device_list(&_num_dev);
     if (_num_dev == 0) {
         printf("|--ibv_get_device_list failed.\n");
         exit(1);
     }
-
     printf("|--ibv_get_device_list ok.[%d]\n", _num_dev);
-    _dev = _dev_list[0]; // used first
 
+    /* ------------------------------------------- */
     // 打开RDMA设备
+    _dev = _dev_list[0];
     context->ctx = ibv_open_device(_dev);
     if (context->ctx == NULL) {
         printf("|--ibv_open_device failed.\n");
         exit(1);
     }
     printf("|--ibv_open_device ok.\n");
+
+    /* ------------------------------------------- */
     _res = ibv_query_port(context->ctx, 1, &context->port_attr);
     if (_res) {
         printf("|--ibv_query_port failed.\n");
@@ -86,6 +91,7 @@ static void open_device(rdma_context_t* context)
     printf("|--ibv_query_port ok.\n");
     printf("|----[lid:%d]\n", context->port_attr.lid);
 
+    /* ------------------------------------------- */
     _res = ibv_query_gid(context->ctx, 1, 0, &context->gid);
     if (_res) {
         printf("|--ibv_query_gid failed.\n");
@@ -107,6 +113,7 @@ static void open_device(rdma_context_t* context)
     }
     printf("\n");
 
+    /* ------------------------------------------- */
     _res = ibv_query_device(context->ctx, &context->dev_attr);
     if (_res) {
         printf("|--ibv_query_device failed.\n");
@@ -121,7 +128,7 @@ static void open_device(rdma_context_t* context)
 
 static void create_qpair(rdma_context_t* context)
 {
-    printf("|create_qpair.\n");
+    printf("----------- Create QPair -----------\n");
     // create protection domain (pd)
     // protection domain可以看作是一个内存保护单位，在内存区域和队列直接建立一个关联关系，防止未授权的访问。
     context->pd = ibv_alloc_pd(context->ctx);
@@ -173,7 +180,7 @@ static void create_qpair(rdma_context_t* context)
 
 static void register_memory_region(rdma_context_t* context)
 {
-    printf("|register_memory_regio.\n");
+    printf("----------- Register Memory Region -----------\n");
     context->ib_buf = (char*)memalign(4096, context->ib_buf_size); // 申请一段内存
     if (context->ib_buf == NULL) {
         printf("|--memalign failed.\n");
