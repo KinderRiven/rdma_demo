@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-07-28 16:53:56
+ * @LastEditTime: 2021-07-28 16:58:02
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -429,6 +429,7 @@ static int post_send(rdma_context_t* context, int opcode)
     if (opcode != IBV_WR_SEND) { // remote
         sr.wr.rdma.remote_addr = qp_info->addr;
         sr.wr.rdma.rkey = qp_info->rkey;
+        printf("[local:%llx][remote:0x%llx]\n", (uint64_t)context->ib_buf, qp_info->addr);
     }
 
     // there is a receive request in the responder side, so we won't get any
