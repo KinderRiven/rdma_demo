@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-07-28 15:38:41
+ * @LastEditTime: 2021-07-28 15:56:20
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -508,11 +508,11 @@ int main(int argc, char** argv)
     connect_qpair(&_ctx);
 
     int tmp;
-    printf("%llx - %d\n", *(uint64_t*)_ctx.local_qp->addr, _ctx.local_qp->rkey);
+    printf("[addr:%llx][data:%llx]\n", (uint64_t*)_ctx.local_qp->addr, *(uint64_t*)_ctx.local_qp->addr);
     while (true) {
         scanf("%d", &tmp);
         if (tmp) {
-            printf("%llx\n", *(uint64_t*)_ctx.local_qp->addr);
+            printf("[addr:%llx][data:%llx]\n", (uint64_t*)_ctx.local_qp->addr, *(uint64_t*)_ctx.local_qp->addr);
         } else {
             break;
         }
