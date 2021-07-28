@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-07-28 10:33:40
+ * @LastEditTime: 2021-07-28 11:17:15
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -19,7 +19,8 @@
 #include <unistd.h>
 
 // static int g_gids[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xff, 0xff, 0x0a, 0x00, 0x00, 0x30 };
-static int g_gids[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xff, 0xff, 0x0a, 0x00, 0x00, 0x28 };
+// 10.0.0.42
+static int g_gids[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xff, 0xff, 0x0a, 0x00, 0x00, 0x2a };
 
 struct qp_info_t {
     uint64_t addr; // buffer address
@@ -150,26 +151,25 @@ static void create_qpair(rdma_context_t* context)
     printf("|--ibv_create_cq ok.\n");
 
     // create shared received queue (srq)
-    struct ibv_srq_init_attr srq_init_attr;
-    srq_init_attr.attr.max_wr = context->dev_attr.max_srq_wr;
-    srq_init_attr.attr.max_sge = 1;
-    context->srq = ibv_create_srq(context->pd, &srq_init_attr);
-    if (context->srq == NULL) {
-        printf("|--ibv_create_srq failed.\n");
-    }
-    printf("|--ibv_create_srq ok.\n");
+    // struct ibv_srq_init_attr srq_init_attr;
+    // srq_init_attr.attr.max_wr = context->dev_attr.max_srq_wr;
+    // srq_init_attr.attr.max_sge = 1;
+    // context->srq = ibv_create_srq(context->pd, &srq_init_attr);
+    // if (context->srq == NULL) {
+    //     printf("|--ibv_create_srq failed.\n");
+    // }
+    // printf("|--ibv_create_srq ok.\n");
 
     struct ibv_qp_init_attr qp_init_attr;
     memset(&qp_init_attr, 0, sizeof(qp_init_attr));
-    // qp_init_attr.qp_context = context->ctx;
+    qp_init_attr.qp_type = IBV_QPT_RC;
+    qp_init_attr.sq_sig_all = 1;
     qp_init_attr.send_cq = context->cq;
     qp_init_attr.recv_cq = context->cq;
-    qp_init_attr.srq = context->srq;
-    qp_init_attr.cap.max_send_wr = 128;
-    qp_init_attr.cap.max_recv_wr = 128;
+    qp_init_attr.cap.max_send_wr = 1;
+    qp_init_attr.cap.max_recv_wr = 1;
     qp_init_attr.cap.max_send_sge = 1;
     qp_init_attr.cap.max_recv_sge = 1;
-    qp_init_attr.qp_type = IBV_QPT_RC;
 
     for (int i = 0; i < context->num_qps; i++) {
         context->qp[i] = ibv_create_qp(context->pd, &qp_init_attr);
@@ -183,7 +183,7 @@ static void create_qpair(rdma_context_t* context)
 
 static void register_memory_region(rdma_context_t* context)
 {
-    printf("----------- Register Memory Region -----------\n");
+    printf("------ Register Memory Region -------\n");
     context->ib_buf = (char*)memalign(4096, context->ib_buf_size); // 申请一段内存
     if (context->ib_buf == NULL) {
         printf("|--memalign failed.\n");
@@ -197,7 +197,7 @@ static void register_memory_region(rdma_context_t* context)
         printf("|--ibv_reg_mr failed.\n");
         exit(1);
     }
-    printf("|--ibv_reg_mr ok.\n");
+    printf("|--ibv_reg_mr ok. [size:%zu]\n", context->ib_buf_size);
     printf("|----[lkey:%d][rkey:%d]\n", context->mr->lkey, context->mr->rkey);
     printf("|----[addr:%llx][length:%zu]\n", (uint64_t)context->mr->addr, context->mr->length);
 }
@@ -329,7 +329,7 @@ static int modify_qp_to_rts(struct ibv_qp* qp)
 
 static void connect_qpair(rdma_context_t* context)
 {
-    printf("|connect.\n");
+    printf("----------- Connect QPair -----------\n");
     //////////////// BUILD TCP/IP CONNECT /////////////////////////
     // bind
     struct addrinfo hints;

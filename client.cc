@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-07-28 10:25:48
+ * @LastEditTime: 2021-07-28 11:18:23
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -20,7 +20,10 @@
 
 #define MSG_SIZE (64)
 
-static int g_gids[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xff, 0xff, 0x0a, 0x00, 0x00, 0x30 };
+// static int g_gids[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xff, 0xff, 0x0a, 0x00, 0x00, 0x30 };
+// 10.0.0.42
+static int g_gids[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xff, 0xff, 0x0a, 0x00, 0x00, 0x28 };
+
 
 struct qp_info_t {
     uint64_t addr; // buffer address
@@ -365,7 +368,7 @@ static void connect_qpair(rdma_context_t* context)
     memset(&hints, 0, sizeof(struct addrinfo));
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_family = AF_UNSPEC;
-    ret = getaddrinfo("127.0.0.1", "4396", &hints, &result);
+    ret = getaddrinfo("10.0.0.42", "4396", &hints, &result);
 
     for (rp = result; rp != NULL; rp = rp->ai_next) {
         sock_fd = socket(rp->ai_family, rp->ai_socktype, rp->ai_protocol);
