@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-07-15 17:07:55
+ * @LastEditTime: 2021-07-28 10:25:48
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -67,7 +67,7 @@ static void open_device(rdma_context_t* context)
         exit(1);
     }
     printf("|--ibv_get_device_list ok.[%d]\n", _num_dev);
-    _dev = _dev_list[1]; // used first
+    _dev = _dev_list[0]; // used first
 
     // 打开RDMA设备
     context->ctx = ibv_open_device(_dev);
@@ -303,7 +303,6 @@ static int modify_qp_to_rtr(struct ibv_qp* qp, uint32_t remote_qpn, uint16_t dli
 {
     struct ibv_qp_attr attr;
     int flags;
-
     printf("[num_qp:%d][lid:%d][gid:", remote_qpn, dlid);
     for (int i = 0; i < 16; i++) {
         printf("%02x", dgid[i]);
