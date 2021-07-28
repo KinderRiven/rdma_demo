@@ -1,0 +1,86 @@
+CXX=clang++
+CXXFLAGS=-O2 -g -std=c++17 -I./src/components
+LDFLAGS=
+LDLIBS=
+
+TARGET_DIR=./target
+TARGET=$(TARGET_DIR)/hill
+OBJ_DIR=./obj
+SRC_DIR=./src
+COMPONENTS_DIR=./src/components
+
+SRC_MAIN=./src/main.cpp
+SRC_COLORING_COLORING=./src/components/coloring/coloring.cpp
+SRC_TESTS_TESTS=./src/components/tests/tests.cpp
+SRC_CMD_PARSER_CMD_PARSER=./src/components/cmd_parser/cmd_parser.cpp
+SRC_RDMA_RDMA=./src/components/rdma/rdma.cpp
+SRC_TEST_COLORING=./tests/test_coloring.cpp
+SRC_TEST_RDMA=./tests/test_rdma.cpp
+
+HDR_COLORING_COLORING=./src/components/coloring/coloring.hpp
+HDR_TESTS_TESTS=./src/components/tests/tests.hpp
+HDR_CMD_PARSER_CMD_PARSER=./src/components/cmd_parser/cmd_parser.hpp
+HDR_RDMA_RDMA=./src/components/rdma/rdma.hpp
+
+OBJ_MAIN=./obj/main.o
+OBJ_COLORING_COLORING=./obj/coloring_coloring.o
+OBJ_TESTS_TESTS=./obj/tests_tests.o
+OBJ_CMD_PARSER_CMD_PARSER=./obj/cmd_parser_cmd_parser.o
+OBJ_RDMA_RDMA=./obj/rdma_rdma.o
+OBJ_TEST_COLORING=./obj/test_coloring.o
+OBJ_TEST_RDMA=./obj/test_rdma.o
+
+OUT_OBJS=$(OBJ_MAIN) $(OBJ_COLORING_COLORING) $(OBJ_CMD_PARSER_CMD_PARSER) $(OBJ_RDMA_RDMA)
+TEST_OBJS=$(OBJ_TESTS_TESTS) $(OBJ_TEST_COLORING) $(OBJ_TEST_RDMA)
+
+TEST_COLORING=./target/test_coloring
+TEST_RDMA=./target/test_rdma
+TESTS=$(TEST_COLORING) $(TEST_RDMA)
+
+MAIN_DEP=$(SRC_MAIN)
+COLORING_COLORING_DEP=$(SRC_COLORING_COLORING) $(HDR_COLORING_COLORING)
+TESTS_TESTS_DEP=$(SRC_TESTS_TESTS) $(HDR_TESTS_TESTS)
+CMD_PARSER_CMD_PARSER_DEP=$(SRC_CMD_PARSER_CMD_PARSER) $(HDR_CMD_PARSER_CMD_PARSER)
+RDMA_RDMA_DEP=$(SRC_RDMA_RDMA) $(HDR_RDMA_RDMA)
+TEST_COLORING_DEP=$(SRC_TEST_COLORING) $(HDR_TEST_COLORING) $(COLORING_COLORING_DEP)
+TEST_RDMA_DEP=$(SRC_TEST_RDMA) $(HDR_TEST_RDMA) $(RDMA_RDMA_DEP) $(COLORING_COLORING_DEP) $(CMD_PARSER_CMD_PARSER_DEP)
+
+out: $(OUT_OBJS)
+	$(CXX) $(CXXFLAGS) -o $(TARGET) $(OUT_OBJS) $(LDFLAGS) $(LDLIBS)
+
+test: $(TESTS)
+
+all: out test
+
+$(OBJ_MAIN): $(MAIN_DEP)
+	$(CXX) $(CXXFLAGS) -o $@ -c $(SRC_MAIN)
+
+$(OBJ_COLORING_COLORING): $(COLORING_COLORING_DEP)
+	$(CXX) $(CXXFLAGS) -o $@ -c $(SRC_COLORING_COLORING)
+
+$(OBJ_TESTS_TESTS): $(TESTS_TESTS_DEP)
+	$(CXX) $(CXXFLAGS) -o $@ -c $(SRC_TESTS_TESTS)
+
+$(OBJ_CMD_PARSER_CMD_PARSER): $(CMD_PARSER_CMD_PARSER_DEP)
+	$(CXX) $(CXXFLAGS) -o $@ -c $(SRC_CMD_PARSER_CMD_PARSER)
+
+$(OBJ_RDMA_RDMA): $(RDMA_RDMA_DEP)
+	$(CXX) $(CXXFLAGS) -o $@ -c $(SRC_RDMA_RDMA)
+
+$(OBJ_TEST_COLORING): $(TEST_COLORING_DEP)
+	$(CXX) $(CXXFLAGS) -o $@ -c $(SRC_TEST_COLORING)
+
+$(OBJ_TEST_RDMA): $(TEST_RDMA_DEP)
+	$(CXX) $(CXXFLAGS) -o $@ -c $(SRC_TEST_RDMA)
+
+$(TEST_COLORING): $(OBJ_TEST_COLORING) $(OBJ_COLORING_COLORING)
+	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS) $(LDLIBS)
+
+$(TEST_RDMA): $(OBJ_TEST_RDMA) $(OBJ_RDMA_RDMA) $(OBJ_COLORING_COLORING) $(OBJ_CMD_PARSER_CMD_PARSER)
+	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS) $(LDLIBS)
+
+
+.PHONY: clean
+clean: 
+	rm ./target/*
+	rm ./obj/*.o

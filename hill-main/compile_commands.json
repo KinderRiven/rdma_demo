@@ -1,0 +1,62 @@
+[
+  {
+    "arguments": [
+      "c++",
+      "-Isrc/components",
+      "-O2",
+      "-g",
+      "-std=c++17",
+      "./src/main.cpp",
+      "./obj/main.o",
+      "-c",
+      "-o"
+    ],
+    "directory": "/home/frostfall/LinuxDev/Research/RDMA/hill",
+    "file": "./src/main.cpp"
+  },
+  {
+    "arguments": [
+      "c++",
+      "-Isrc/components",
+      "-O2",
+      "-g",
+      "-std=c++17",
+      "./src/components/tests/tests.cpp",
+      "./obj/tests_tests.o",
+      "-c",
+      "-o"
+    ],
+    "directory": "/home/frostfall/LinuxDev/Research/RDMA/hill",
+    "file": "./src/components/tests/tests.cpp"
+  },
+  {
+    "arguments": [
+      "c++",
+      "-Isrc/components",
+      "-O2",
+      "-g",
+      "-std=c++17",
+      "./src/components/rdma/rdma.cpp",
+      "./obj/rdma_rdma.o",
+      "-c",
+      "-o"
+    ],
+    "directory": "/home/frostfall/LinuxDev/Research/RDMA/hill",
+    "file": "./src/components/rdma/rdma.cpp"
+  },
+  {
+    "arguments": [
+      "c++",
+      "-Isrc/components",
+      "-O2",
+      "-g",
+      "-std=c++17",
+      "./tests/test_rdma.cpp",
+      "./obj/test_rdma.o",
+      "-c",
+      "-o"
+    ],
+    "directory": "/home/frostfall/LinuxDev/Research/RDMA/hill",
+    "file": "./tests/test_rdma.cpp"
+  }
+]

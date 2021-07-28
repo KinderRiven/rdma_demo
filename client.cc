@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-07-28 16:15:29
+ * @LastEditTime: 2021-07-28 16:40:01
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -510,15 +510,16 @@ int main(int argc, char** argv)
     rdma_init(&_ctx);
     connect_qpair(&_ctx);
 
-    int ret = post_send(&_ctx, IBV_WR_RDMA_WRITE);
-    printf("post_send = %d\n", ret);
-    printf("%llx\n", *(uint64_t*)_ctx.ib_buf);
+    int ret;
+    // ret = post_send(&_ctx, IBV_WR_RDMA_WRITE);
+    // printf("post_send = %d\n", ret);
+    // printf("%llx\n", *(uint64_t*)_ctx.ib_buf);
 
-    // ret = post_receive(&_ctx);
-    // printf("post_receive = %d\n", ret);
-    // if (!ret) {
-    //    printf("data = %llu\n", *(uint64_t*)_ctx.remote_qp->addr);
-    // }
+    ret = post_receive(&_ctx);
+    printf("post_receive = %d\n", ret);
+    if (!ret) {
+       printf("data = %llu\n", *(uint64_t*)_ctx.remote_qp->addr);
+    }
     poll_cq(&_ctx);
     return 0;
 }
