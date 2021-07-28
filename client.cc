@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-07-28 15:39:00
+ * @LastEditTime: 2021-07-28 15:48:43
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -447,8 +447,6 @@ static int post_send(rdma_context_t* context, int opcode)
     int ret = ibv_post_send(context->qp[0], &sr, &bad_wr);
     if (ret) {
         printf("%s\n", strerror(ret));
-    } else {
-        printf("send ok.\n");
     }
     return ret;
 }
@@ -475,6 +473,9 @@ static int post_receive(rdma_context_t* context)
 
     // post the receive request to the RQ
     int ret = ibv_post_recv(context->qp[0], &rr, &bad_wr);
+    if (ret) {
+        printf("%s\n", strerror(ret));
+    }
     return ret;
 }
 
@@ -514,8 +515,9 @@ int main(int argc, char** argv)
 
     ret = post_receive(&_ctx);
     printf("post_receive = %d\n", ret);
-    printf("data = %llu\n", *(uint64_t*)_ctx.remote_qp->addr);
-
+    if (!ret) {
+        printf("data = %llu\n", *(uint64_t*)_ctx.remote_qp->addr);
+    }
     poll_cq(&_ctx);
     return 0;
 }
