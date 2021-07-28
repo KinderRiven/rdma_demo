@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-07-28 15:23:35
+ * @LastEditTime: 2021-07-28 15:35:03
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -510,7 +510,7 @@ int main(int argc, char** argv)
     connect_qpair(&_ctx);
 
     int tmp;
-    printf("%llx\n", *(uint64_t*)g_context.local_qp->addr);
+    printf("%llx - %d\n", (uint64_t)g_context.local_qp->addr, g_context.local_qp->rkey);
     while (true) {
         scanf("%d", &tmp);
         if (tmp) {
