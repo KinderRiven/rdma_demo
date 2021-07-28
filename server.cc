@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-07-28 15:56:20
+ * @LastEditTime: 2021-07-28 16:46:49
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -188,6 +188,7 @@ static void register_memory_region(rdma_context_t* context)
         exit(1);
     }
     printf("|--memalign ok.\n");
+    *(uint64_t*)context->ib_buf = 0x666666;
 
     context->mr = ibv_reg_mr(context->pd, (void*)context->ib_buf, context->ib_buf_size,
         IBV_ACCESS_LOCAL_WRITE | IBV_ACCESS_REMOTE_READ | IBV_ACCESS_REMOTE_WRITE);
