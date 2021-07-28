@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-07-28 11:21:18
+ * @LastEditTime: 2021-07-28 11:50:12
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -23,7 +23,6 @@
 // static int g_gids[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xff, 0xff, 0x0a, 0x00, 0x00, 0x30 };
 // 10.0.0.42
 static int g_gids[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xff, 0xff, 0x0a, 0x00, 0x00, 0x28 };
-
 
 struct qp_info_t {
     uint64_t addr; // buffer address
@@ -450,6 +449,11 @@ static int post_send(rdma_context_t* context, int opcode)
     // there is a receive request in the responder side, so we won't get any
     // into RNR flow
     int ret = ibv_post_send(context->qp[0], &sr, &bad_wr);
+    if (ret) {
+        printf("%s\n", strerror(ret));
+    } else {
+        printf("send ok.\n");
+    }
     return ret;
 }
 
