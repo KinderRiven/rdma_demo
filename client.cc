@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-07-28 17:05:10
+ * @LastEditTime: 2021-07-28 17:06:06
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -485,7 +485,7 @@ static void poll_cq(rdma_context_t* context)
             exit(1);
         }
         if (n) {
-            printf("[addr:%llx][data:%llx]\n", (uint64_t*)context.local_qp->addr, *(uint64_t*)context.local_qp->addr);
+            printf("[addr:%llx][data:%llx]\n", (uint64_t*)context->local_qp->addr, *(uint64_t*)context->local_qp->addr);
             printf("%d\n", n);
         }
     }
