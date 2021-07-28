@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-07-28 10:32:06
+ * @LastEditTime: 2021-07-28 10:33:40
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -97,6 +97,8 @@ static void open_device(rdma_context_t* context)
         printf("|--ibv_query_gid failed.\n");
         exit(1);
     }
+    printf("|--ibv_query_gid ok.\n");
+    printf("|----");
     for (int i = 0; i < 16; i++) {
         printf("%02x", context->gid.raw[i]);
         if (i & 1) {
@@ -104,6 +106,7 @@ static void open_device(rdma_context_t* context)
         }
     }
     printf("\n");
+    printf("|----");
     for (int i = 0; i < 16; i++) {
         context->gid.raw[i] = g_gids[i];
         printf("%02x", context->gid.raw[i]);
