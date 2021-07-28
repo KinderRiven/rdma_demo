@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-07-28 11:21:43
+ * @LastEditTime: 2021-07-28 15:19:06
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -508,6 +508,16 @@ int main(int argc, char** argv)
 
     rdma_init(&_ctx);
     connect_qpair(&_ctx);
+
+    int tmp;
+    while (true) {
+        scanf("%d", &tmp);
+        if (tmp) {
+            printf("%llx\n", *(uint64_t*)g_context.local_qp->addr);
+        } else {
+            break;
+        }
+    }
 
     poll_cq(&_ctx);
     return 0;

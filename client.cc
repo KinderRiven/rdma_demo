@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-07-28 11:50:12
+ * @LastEditTime: 2021-07-28 14:27:35
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -425,18 +425,16 @@ static int post_send(rdma_context_t* context, int opcode)
 
     // prepare the scatter / gather entry
     memset(&sge, 0, sizeof(sge));
-
+    memset((void*)context->ib_buf, 0xff, MSG_SIZE); // write
     sge.addr = (uintptr_t)context->ib_buf;
     sge.length = MSG_SIZE;
     sge.lkey = context->mr->lkey;
 
     // prepare the send work request
     memset(&sr, 0, sizeof(sr));
-
     sr.next = NULL;
     sr.wr_id = 0;
     sr.sg_list = &sge;
-
     sr.num_sge = 1;
     sr.opcode = (ibv_wr_opcode)opcode;
     sr.send_flags = IBV_SEND_SIGNALED;
@@ -472,7 +470,6 @@ static int post_receive(rdma_context_t* context)
 
     // prepare the receive work request
     memset(&rr, 0, sizeof(rr));
-
     rr.next = NULL;
     rr.wr_id = 0;
     rr.sg_list = &sge;
