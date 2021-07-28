@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-07-28 16:48:15
+ * @LastEditTime: 2021-07-28 16:53:56
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -202,17 +202,6 @@ static void register_memory_region(rdma_context_t* context)
         printf("|--memalign ok.\n");
     }
 
-    /*
-    struct ibv_mr {
-        struct ibv_context  *context;
-        struct ibv_pd	    *pd;
-        void		        *addr;
-        size_t			    length;
-        uint32_t		    handle;
-        uint32_t		    lkey;
-        uint32_t		    rkey;
-    };
-    */
     context->mr = ibv_reg_mr(context->pd, (void*)context->ib_buf,
         context->ib_buf_size,
         IBV_ACCESS_LOCAL_WRITE | IBV_ACCESS_REMOTE_READ | IBV_ACCESS_REMOTE_WRITE);
@@ -513,7 +502,18 @@ int main(int argc, char** argv)
     int ret;
     ret = post_send(&_ctx, IBV_WR_RDMA_READ);
     printf("post_send = %d\n", ret);
-    printf("%llx\n", *(uint64_t*)_ctx.ib_buf);
+    printf("[addr:%llx][data:%llx]\n", (uint64_t*)_ctx.local_qp->addr, *(uint64_t*)_ctx.local_qp->addr);
+
+    int tmp;
+    printf("[addr:%llx][data:%llx]\n", (uint64_t*)_ctx.local_qp->addr, *(uint64_t*)_ctx.local_qp->addr);
+    while (true) {
+        scanf("%d", &tmp);
+        if (tmp) {
+            printf("[addr:%llx][data:%llx]\n", (uint64_t*)_ctx.local_qp->addr, *(uint64_t*)_ctx.local_qp->addr);
+        } else {
+            break;
+        }
+    }
 
 #if 0
     ret = post_receive(&_ctx);
