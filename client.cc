@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-07-28 17:06:06
+ * @LastEditTime: 2021-08-05 14:29:03
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -374,13 +374,15 @@ static void connect_qpair(rdma_context_t* context)
     // send
     qp_info_t* local_qp_info = (qp_info_t*)malloc(sizeof(qp_info_t));
     context->local_qp = local_qp_info;
-    local_qp_info->addr = (uint64_t)context->ib_buf;
-    local_qp_info->rkey = context->mr->rkey;
-    local_qp_info->qp_num = context->num_qps;
+    local_qp_info->addr = (uint64_t)context->ib_buf; // 注册内存的地址
+    local_qp_info->rkey = context->mr->rkey; // 注册内存的remote key
+    local_qp_info->qp_num = context->num_qps; // qp个数
     local_qp_info->lid = context->port_attr.lid;
     memcpy((void*)(&local_qp_info->gid), (void*)(&context->gid), sizeof(context->gid));
     size_t sz = sock_write(sock_fd, local_qp_info, sizeof(qp_info_t));
     printf("|--sock_write[%zu/%zu]\n", sz, sizeof(qp_info_t));
+    printf("|----[addr:%llx][rkey:%d]\n", local_qp_info->addr, local_qp_info->rkey);
+    printf("|----[lid:%d][qp_num:%d]\n", local_qp_info->lid, local_qp_info->qp_num);
 
     // recv
     qp_info_t* remote_qp_info = (qp_info_t*)malloc(sizeof(qp_info_t));
@@ -405,8 +407,8 @@ static void connect_qpair(rdma_context_t* context)
 // ------------------ Send/Recv -------------------- //
 static int post_send(rdma_context_t* context, int opcode)
 {
-    struct ibv_send_wr sr;
     struct ibv_sge sge;
+    struct ibv_send_wr sr;
     struct ibv_send_wr* bad_wr = NULL;
 
     // prepare the scatter / gather entry

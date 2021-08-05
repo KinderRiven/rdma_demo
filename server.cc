@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-07-28 16:46:49
+ * @LastEditTime: 2021-08-05 14:29:17
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -397,6 +397,8 @@ static void connect_qpair(rdma_context_t* context)
     memcpy((void*)(&local_qp_info->gid), (void*)(&context->gid), sizeof(context->gid));
     sz = sock_write(peer_sockfd, local_qp_info, sizeof(qp_info_t));
     printf("|--sock_write[%zu/%zu]\n", sz, sizeof(qp_info_t));
+    printf("|----[addr:%llx][rkey:%d]\n", local_qp_info->addr, local_qp_info->rkey);
+    printf("|----[lid:%d][qp_num:%d]\n", local_qp_info->lid, local_qp_info->qp_num);
 
     /////////////////
     ret = modify_qp_to_init(context->qp[0]);
@@ -441,7 +443,6 @@ static int post_send(rdma_context_t* context, int opcode)
         sr.wr.rdma.remote_addr = qp_info->addr;
         sr.wr.rdma.rkey = qp_info->rkey;
     }
-
     // there is a receive request in the responder side, so we won't get any
     // into RNR flow
     int ret = ibv_post_send(context->qp[0], &sr, &bad_wr);
