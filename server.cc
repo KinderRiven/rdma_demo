@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-08-05 14:29:17
+ * @LastEditTime: 2021-08-05 14:50:34
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -423,7 +423,6 @@ static int post_send(rdma_context_t* context, int opcode)
 
     // prepare the scatter / gather entry
     memset(&sge, 0, sizeof(sge));
-
     sge.addr = (uintptr_t)context->ib_buf;
     sge.length = MSG_SIZE;
     sge.lkey = context->mr->lkey;
@@ -491,7 +490,7 @@ static void poll_cq(rdma_context_t* context)
             exit(1);
         }
         if (n) {
-            printf("%d\n", n);
+            printf("Completion was found in CQ with status 0x%x (%d)\n", wc.status, n);
         }
     }
 }
