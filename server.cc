@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-08-05 14:50:34
+ * @LastEditTime: 2021-08-05 14:52:00
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -476,15 +476,15 @@ static int post_receive(rdma_context_t* context)
 
 static void poll_cq(rdma_context_t* context)
 {
-    int num_wc = 20;
+    int num_wc = 1;
     struct ibv_qp** qp = context->qp;
     struct ibv_cq* cq = context->cq;
     struct ibv_srq* srq = context->srq;
-    struct ibv_wc* wc = NULL;
-    wc = (struct ibv_wc*)calloc(num_wc, sizeof(struct ibv_wc));
+    struct ibv_wc wc;
+    // wc = (struct ibv_wc*)calloc(num_wc, sizeof(struct ibv_wc));
 
     while (true) {
-        int n = ibv_poll_cq(cq, num_wc, wc);
+        int n = ibv_poll_cq(cq, num_wc, &wc);
         if (n < 0) {
             printf("ibv_poll_cq failed.\n");
             exit(1);
