@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-08-07 11:41:53
+ * @LastEditTime: 2021-08-07 11:47:51
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -308,8 +308,8 @@ static int modify_qp_to_rts(struct ibv_qp* qp)
 
     attr.qp_state = IBV_QPS_RTS;
     attr.timeout = 12; // 18
-    attr.retry_cnt = 7;
-    attr.rnr_retry = 7;
+    attr.retry_cnt = 6;
+    attr.rnr_retry = 0;
     attr.sq_psn = 0;
     attr.max_rd_atomic = 1;
 
