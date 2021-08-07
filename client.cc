@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-08-07 10:42:41
+ * @LastEditTime: 2021-08-07 10:44:33
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -384,7 +384,7 @@ static void connect_qpair(rdma_context_t* context)
     printf("|----[addr:%llx][rkey:%d]\n", remote_qp_info->addr, remote_qp_info->rkey);
     printf("|----[lid:%d][qp_num:%d]\n", remote_qp_info->lid, remote_qp_info->qp_num);
     printf("|----[gid:");
-    uint8_t *_gids = (uint8_t*)(&remote_qp_info->gid));
+    uint8_t *_gids = (uint8_t*)(&remote_qp_info->gid);
     for (int i = 0; i < 16; i++) {
         printf("%02x", _gids[i]);
         if (i & 1) {
