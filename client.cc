@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-08-07 11:34:15
+ * @LastEditTime: 2021-08-07 11:35:27
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -151,29 +151,11 @@ static void create_qpair(rdma_context_t* context)
     // }
 
     struct ibv_qp_init_attr qp_init_attr;
-    /*
-        struct ibv_qp_init_attr {
-            void		        *qp_context;
-            struct ibv_cq	    *send_cq;
-            struct ibv_cq	    *recv_cq;
-            struct ibv_srq	    *srq;
-            struct ibv_qp_cap	cap;
-            enum ibv_qp_type	qp_type;
-            int			        sq_sig_all;
-        }; 
-        struct ibv_qp_cap {
-            uint32_t		max_send_wr;
-            uint32_t		max_recv_wr;
-            uint32_t		max_send_sge;
-            uint32_t		max_recv_sge;
-            uint32_t		max_inline_data;
-        }
-    */
     memset(&qp_init_attr, 0, sizeof(qp_init_attr));
     qp_init_attr.qp_type = IBV_QPT_RC;
     qp_init_attr.sq_sig_all = 1;
-    qp_init_attr.send_cq = res->cq;
-    qp_init_attr.recv_cq = res->cq;
+    qp_init_attr.send_cq = context->cq;
+    qp_init_attr.recv_cq = context->cq;
     qp_init_attr.cap.max_send_wr = 1;
     qp_init_attr.cap.max_recv_wr = 1;
     qp_init_attr.cap.max_send_sge = 1;
