@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-08-07 13:40:31
+ * @LastEditTime: 2021-08-07 13:45:18
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -468,7 +468,23 @@ static void poll_cq(rdma_context_t* context)
     struct ibv_cq* cq = context->cq;
     struct ibv_wc wc;
     // wc = (struct ibv_wc*)calloc(num_wc, sizeof(struct ibv_wc));
-
+    /*
+    struct ibv_wc {
+        uint64_t		wr_id;
+        enum ibv_wc_status	status;
+        enum ibv_wc_opcode	opcode;
+        uint32_t		vendor_err;
+        uint32_t		byte_len;
+        uint32_t		imm_data;
+        uint32_t		qp_num;
+        uint32_t		src_qp;
+        int			    wc_flags;
+        uint16_t		pkey_index;
+        uint16_t		slid;
+        uint8_t			sl;
+        uint8_t			dlid_path_bits;
+    };
+    */
     while (true) {
         int n = ibv_poll_cq(cq, num_wc, &wc);
         if (n < 0) {
@@ -476,8 +492,9 @@ static void poll_cq(rdma_context_t* context)
             exit(1);
         }
         if ((n) && (wc.status != IBV_WC_SUCCESS)) {
-            printf("|Completion was found in CQ with error status [%s]\n", ibv_wc_status_str(wc.status));
-            printf("|-[num:%d][status:%d][opcode:%d]\n", n, wc.status, wc.opcode);
+            printf("|Completion was found in CQ with error status [%s][%d]\n", ibv_wc_status_str(wc.status), n);
+            printf("|-[wr_id:%d][status:%d][opcode:%d]\n", wc.wr_id, wc.status, wc.oipcode);
+            printf("|-[byte_len:%d][qp_num:%d][src_qp:%d]\n", wc.byte_len, wc.qp_num, wc.src_qp);
         }
     }
 }
