@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-08-05 14:59:01
+ * @LastEditTime: 2021-08-07 10:43:18
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -274,14 +274,6 @@ static int modify_qp_to_rtr(struct ibv_qp* qp, uint32_t remote_qpn, uint16_t dli
 {
     struct ibv_qp_attr attr;
     int flags;
-    printf("[num_qp:%d][lid:%d][gid:", remote_qpn, dlid);
-    for (int i = 0; i < 16; i++) {
-        printf("%02x", dgid[i]);
-        if (i & 1) {
-            printf(":");
-        }
-    }
-    printf("]\n");
     memset(&attr, 0, sizeof(attr));
 
     attr.qp_state = IBV_QPS_RTR;
@@ -301,7 +293,7 @@ static int modify_qp_to_rtr(struct ibv_qp* qp, uint32_t remote_qpn, uint16_t dli
     memcpy(&attr.ah_attr.grh.dgid, dgid, 16);
     attr.ah_attr.grh.flow_label = 0;
     attr.ah_attr.grh.hop_limit = 1;
-    attr.ah_attr.grh.sgid_index = 2;
+    attr.ah_attr.grh.sgid_index = 2; // important
     attr.ah_attr.grh.traffic_class = 0;
 
     flags = IBV_QP_STATE | IBV_QP_AV | IBV_QP_PATH_MTU | IBV_QP_DEST_QPN | IBV_QP_RQ_PSN | IBV_QP_MAX_DEST_RD_ATOMIC | IBV_QP_MIN_RNR_TIMER;
@@ -386,6 +378,14 @@ static void connect_qpair(rdma_context_t* context)
     printf("|--sock_read[%zu/%zu]\n", sz, sizeof(qp_info_t));
     printf("|----[addr:%llx][rkey:%d]\n", remote_qp_info->addr, remote_qp_info->rkey);
     printf("|----[lid:%d][qp_num:%d]\n", remote_qp_info->lid, remote_qp_info->qp_num);
+    uint8_t *_gids = (uint8_t*)(&remote_qp_info->gid));
+    for (int i = 0; i < 16; i++) {
+        printf("%02x", _gids[i]);
+        if (i & 1) {
+            printf(":");
+        }
+    }
+    printf("]\n");
 
     // send
     qp_info_t* local_qp_info = (qp_info_t*)malloc(sizeof(qp_info_t));
