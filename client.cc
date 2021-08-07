@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-08-07 11:35:27
+ * @LastEditTime: 2021-08-07 11:41:53
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -327,7 +327,7 @@ static void connect_qpair(rdma_context_t* context)
     memset(&hints, 0, sizeof(struct addrinfo));
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_family = AF_UNSPEC;
-    ret = getaddrinfo("10.0.0.42", "4396", &hints, &result);
+    ret = getaddrinfo("172.18.13.42", "4396", &hints, &result);
 
     for (rp = result; rp != NULL; rp = rp->ai_next) {
         sock_fd = socket(rp->ai_family, rp->ai_socktype, rp->ai_protocol);
