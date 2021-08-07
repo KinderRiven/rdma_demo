@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-08-07 11:21:56
+ * @LastEditTime: 2021-08-07 11:34:15
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -131,7 +131,7 @@ static void create_qpair(rdma_context_t* context)
     }
 
     // create completion queue (cq)
-    context->cq = ibv_create_cq(context->ctx, context->dev_attr.max_cqe, NULL, NULL, 0);
+    context->cq = ibv_create_cq(context->ctx, 1, NULL, NULL, 0);
     if (context->cq == NULL) {
         printf("|--ibv_create_cq failed.\n");
         exit(1);
@@ -140,15 +140,15 @@ static void create_qpair(rdma_context_t* context)
     }
 
     // create shared received queue (srq)
-    struct ibv_srq_init_attr srq_init_attr;
-    srq_init_attr.attr.max_wr = context->dev_attr.max_srq_wr;
-    srq_init_attr.attr.max_sge = 1;
-    context->srq = ibv_create_srq(context->pd, &srq_init_attr);
-    if (context->srq == NULL) {
-        printf("|--ibv_create_srq failed.\n");
-    } else {
-        printf("|--ibv_create_srq ok.\n");
-    }
+    // struct ibv_srq_init_attr srq_init_attr;
+    // srq_init_attr.attr.max_wr = context->dev_attr.max_srq_wr;
+    // srq_init_attr.attr.max_sge = 1;
+    // context->srq = ibv_create_srq(context->pd, &srq_init_attr);
+    // if (context->srq == NULL) {
+    //     printf("|--ibv_create_srq failed.\n");
+    // } else {
+    //     printf("|--ibv_create_srq ok.\n");
+    // }
 
     struct ibv_qp_init_attr qp_init_attr;
     /*
@@ -170,15 +170,14 @@ static void create_qpair(rdma_context_t* context)
         }
     */
     memset(&qp_init_attr, 0, sizeof(qp_init_attr));
-    qp_init_attr.qp_context = context->ctx;
-    qp_init_attr.send_cq = context->cq;
-    qp_init_attr.recv_cq = context->cq;
-    qp_init_attr.srq = context->srq;
-    qp_init_attr.cap.max_send_wr = 128;
-    qp_init_attr.cap.max_recv_wr = 128;
+    qp_init_attr.qp_type = IBV_QPT_RC;
+    qp_init_attr.sq_sig_all = 1;
+    qp_init_attr.send_cq = res->cq;
+    qp_init_attr.recv_cq = res->cq;
+    qp_init_attr.cap.max_send_wr = 1;
+    qp_init_attr.cap.max_recv_wr = 1;
     qp_init_attr.cap.max_send_sge = 1;
     qp_init_attr.cap.max_recv_sge = 1;
-    qp_init_attr.qp_type = IBV_QPT_RC;
 
     for (int i = 0; i < context->num_qps; i++) {
         context->qp[i] = ibv_create_qp(context->pd, &qp_init_attr);

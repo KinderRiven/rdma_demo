@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-08-07 11:22:11
+ * @LastEditTime: 2021-08-07 11:29:15
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -141,7 +141,7 @@ static void create_qpair(rdma_context_t* context)
     printf("|--ibv_alloc_pd ok.\n");
 
     // create completion queue (cq)
-    context->cq = ibv_create_cq(context->ctx, context->dev_attr.max_cqe, NULL, NULL, 0);
+    context->cq = ibv_create_cq(context->ctx, 1, NULL, NULL, 0);
     if (context->cq == NULL) {
         printf("|--ibv_create_cq failed.\n");
         exit(1);
@@ -188,7 +188,7 @@ static void register_memory_region(rdma_context_t* context)
         exit(1);
     }
     printf("|--memalign ok.\n");
-    *(uint64_t*)context->ib_buf = 0x666666;
+    // *(uint64_t*)context->ib_buf = 0x666666;
 
     context->mr = ibv_reg_mr(context->pd, (void*)context->ib_buf, context->ib_buf_size,
         IBV_ACCESS_LOCAL_WRITE | IBV_ACCESS_REMOTE_READ | IBV_ACCESS_REMOTE_WRITE);
