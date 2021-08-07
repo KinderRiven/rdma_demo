@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-08-07 13:45:18
+ * @LastEditTime: 2021-08-07 13:45:46
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -493,7 +493,7 @@ static void poll_cq(rdma_context_t* context)
         }
         if ((n) && (wc.status != IBV_WC_SUCCESS)) {
             printf("|Completion was found in CQ with error status [%s][%d]\n", ibv_wc_status_str(wc.status), n);
-            printf("|-[wr_id:%d][status:%d][opcode:%d]\n", wc.wr_id, wc.status, wc.oipcode);
+            printf("|-[wr_id:%d][status:%d][opcode:%d]\n", wc.wr_id, wc.status, wc.opcode);
             printf("|-[byte_len:%d][qp_num:%d][src_qp:%d]\n", wc.byte_len, wc.qp_num, wc.src_qp);
         }
     }
