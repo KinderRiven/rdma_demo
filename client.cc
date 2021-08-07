@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-08-07 10:44:33
+ * @LastEditTime: 2021-08-07 10:47:40
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -375,6 +375,15 @@ static void connect_qpair(rdma_context_t* context)
     printf("|--sock_write[%zu/%zu]\n", sz, sizeof(qp_info_t));
     printf("|----[addr:%llx][rkey:%d]\n", local_qp_info->addr, local_qp_info->rkey);
     printf("|----[lid:%d][qp_num:%d]\n", local_qp_info->lid, local_qp_info->qp_num);
+    printf("|----[gid:");
+    uint8_t* _lo_gids = (uint8_t*)(&local_qp_info->gid);
+    for (int i = 0; i < 16; i++) {
+        printf("%02x", _lo_gids[i]);
+        if (i & 1) {
+            printf(":");
+        }
+    }
+    printf("]\n");
 
     // recv
     qp_info_t* remote_qp_info = (qp_info_t*)malloc(sizeof(qp_info_t));
@@ -384,9 +393,9 @@ static void connect_qpair(rdma_context_t* context)
     printf("|----[addr:%llx][rkey:%d]\n", remote_qp_info->addr, remote_qp_info->rkey);
     printf("|----[lid:%d][qp_num:%d]\n", remote_qp_info->lid, remote_qp_info->qp_num);
     printf("|----[gid:");
-    uint8_t *_gids = (uint8_t*)(&remote_qp_info->gid);
+    uint8_t* _rm_gids = (uint8_t*)(&remote_qp_info->gid);
     for (int i = 0; i < 16; i++) {
-        printf("%02x", _gids[i]);
+        printf("%02x", _rm_gids[i]);
         if (i & 1) {
             printf(":");
         }
