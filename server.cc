@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-08-07 11:48:07
+ * @LastEditTime: 2021-08-07 13:15:06
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -20,7 +20,7 @@
 
 // static int g_gids[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xff, 0xff, 0x0a, 0x00, 0x00, 0x30 };
 // 10.0.0.42
-static int g_gids[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xff, 0xff, 0x0a, 0x00, 0x00, 0x2a };
+// static int g_gids[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xff, 0xff, 0x0a, 0x00, 0x00, 0x2a };
 
 struct qp_info_t {
     uint64_t addr; // buffer address
@@ -91,6 +91,8 @@ static void open_device(rdma_context_t* context)
     printf("|----[lid:%d]\n", context->port_attr.lid);
 
     /* ------------------------------------------- */
+    // port is 1 | idx is 2
+    // use show_gids to show all info
     _res = ibv_query_gid(context->ctx, 1, 2, &context->gid);
     if (_res) {
         printf("|--ibv_query_gid failed.\n");
@@ -106,14 +108,14 @@ static void open_device(rdma_context_t* context)
     }
     printf("\n");
     printf("|----");
-    for (int i = 0; i < 16; i++) {
-        context->gid.raw[i] = g_gids[i];
-        printf("%02x", context->gid.raw[i]);
-        if (i & 1) {
-            printf(":");
-        }
-    }
-    printf("\n");
+    // for (int i = 0; i < 16; i++) {
+    //     context->gid.raw[i] = g_gids[i];
+    //     printf("%02x", context->gid.raw[i]);
+    //     if (i & 1) {
+    //         printf(":");
+    //     }
+    // }
+    // printf("\n");
 
     /* ------------------------------------------- */
     _res = ibv_query_device(context->ctx, &context->dev_attr);
@@ -263,7 +265,6 @@ static int modify_qp_to_init(struct ibv_qp* qp)
     attr.port_num = 1;
     attr.pkey_index = 0;
     attr.qp_access_flags = IBV_ACCESS_LOCAL_WRITE | IBV_ACCESS_REMOTE_READ | IBV_ACCESS_REMOTE_WRITE;
-
     flags = IBV_QP_STATE | IBV_QP_PKEY_INDEX | IBV_QP_PORT | IBV_QP_ACCESS_FLAGS;
     return ibv_modify_qp(qp, &attr, flags);
 }

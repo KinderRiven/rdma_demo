@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-08-07 11:47:51
+ * @LastEditTime: 2021-08-07 13:14:51
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -22,7 +22,7 @@
 
 // static int g_gids[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xff, 0xff, 0x0a, 0x00, 0x00, 0x30 };
 // 10.0.0.42
-static int g_gids[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xff, 0xff, 0x0a, 0x00, 0x00, 0x28 };
+// static int g_gids[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xff, 0xff, 0x0a, 0x00, 0x00, 0x28 };
 
 struct qp_info_t {
     uint64_t addr; // buffer address
@@ -96,14 +96,14 @@ static void open_device(rdma_context_t* context)
         }
     }
     printf("\n");
-    for (int i = 0; i < 16; i++) {
-        context->gid.raw[i] = g_gids[i];
-        printf("%02x", context->gid.raw[i]);
-        if (i & 1) {
-            printf(":");
-        }
-    }
-    printf("\n");
+    // for (int i = 0; i < 16; i++) {
+    //     context->gid.raw[i] = g_gids[i];
+    //     printf("%02x", context->gid.raw[i]);
+    //     if (i & 1) {
+    //         printf(":");
+    //     }
+    // }
+    // printf("\n");
 
     _res = ibv_query_device(context->ctx, &context->dev_attr);
     if (_res) {
