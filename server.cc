@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-08-07 16:07:54
+ * @LastEditTime: 2021-08-07 16:12:25
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -184,23 +184,27 @@ static void create_qpair(rdma_context_t* context)
 
 static void register_memory_region(rdma_context_t* context)
 {
-    printf("------ Register Memory Region -------\n");
+    printf("|register_memory_regio.\n");
+    // 注册一段内存区域的函数
     context->ib_buf = new char[context->ib_buf_size]; // 申请一段内存
     if (context->ib_buf == NULL) {
         printf("|--memalign failed.\n");
         exit(1);
+    } else {
+        printf("|--memalign ok.\n");
     }
-    printf("|--memalign ok.\n");
 
-    context->mr = ibv_reg_mr(context->pd, (void*)context->ib_buf, context->ib_buf_size,
+    context->mr = ibv_reg_mr(context->pd, (void*)context->ib_buf,
+        context->ib_buf_size,
         IBV_ACCESS_LOCAL_WRITE | IBV_ACCESS_REMOTE_READ | IBV_ACCESS_REMOTE_WRITE);
     if (context->mr == NULL) {
         printf("|--ibv_reg_mr failed.\n");
         exit(1);
+    } else {
+        printf("|--ibv_reg_mr ok.\n");
+        printf("|----[lkey:%d][rkey:%d]\n", context->mr->lkey, context->mr->rkey);
+        printf("|----[addr:0x%llx][length:%.2fMB]\n", (uint64_t)context->mr->addr, 1.0 * context->mr->length / (1024 * 1024));
     }
-    printf("|--ibv_reg_mr ok. [size:%zu]\n", context->ib_buf_size);
-    printf("|----[lkey:%d][rkey:%d]\n", context->mr->lkey, context->mr->rkey);
-    printf("|----[addr:%llx][length:%zu]\n", (uint64_t)context->mr->addr, context->mr->length);
 }
 
 static void rdma_init(rdma_context_t* context)

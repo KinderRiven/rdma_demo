@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-08-07 16:08:09
+ * @LastEditTime: 2021-08-07 16:09:47
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -96,14 +96,6 @@ static void open_device(rdma_context_t* context)
         }
     }
     printf("\n");
-    // for (int i = 0; i < 16; i++) {
-    //     context->gid.raw[i] = g_gids[i];
-    //     printf("%02x", context->gid.raw[i]);
-    //     if (i & 1) {
-    //         printf(":");
-    //     }
-    // }
-    // printf("\n");
 
     _res = ibv_query_device(context->ctx, &context->dev_attr);
     if (_res) {
@@ -193,7 +185,7 @@ static void register_memory_region(rdma_context_t* context)
     } else {
         printf("|--ibv_reg_mr ok.\n");
         printf("|----[lkey:%d][rkey:%d]\n", context->mr->lkey, context->mr->rkey);
-        printf("|----[addr:%llx][length:%zu]\n", (uint64_t)context->mr->addr, context->mr->length);
+        printf("|----[addr:0x%llx][length:%.2fMB]\n", (uint64_t)context->mr->addr, 1.0 * context->mr->length / (1024 * 1024));
     }
 }
 
