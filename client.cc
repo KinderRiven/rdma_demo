@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-08-07 15:19:48
+ * @LastEditTime: 2021-08-07 16:08:09
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -176,7 +176,7 @@ static void register_memory_region(rdma_context_t* context)
 {
     printf("|register_memory_regio.\n");
     // 注册一段内存区域的函数
-    context->ib_buf = (char*)memalign(4096, context->ib_buf_size); // 申请一段内存
+    context->ib_buf = new char[context->ib_buf_size]; // 申请一段内存
     if (context->ib_buf == NULL) {
         printf("|--memalign failed.\n");
         exit(1);

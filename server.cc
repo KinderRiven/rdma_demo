@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-08-07 15:23:01
+ * @LastEditTime: 2021-08-07 16:07:54
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -185,7 +185,7 @@ static void create_qpair(rdma_context_t* context)
 static void register_memory_region(rdma_context_t* context)
 {
     printf("------ Register Memory Region -------\n");
-    context->ib_buf = (char*)memalign(4096, context->ib_buf_size); // 申请一段内存
+    context->ib_buf = new char[context->ib_buf_size]; // 申请一段内存
     if (context->ib_buf == NULL) {
         printf("|--memalign failed.\n");
         exit(1);
