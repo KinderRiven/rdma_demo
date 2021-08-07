@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-08-07 13:37:38
+ * @LastEditTime: 2021-08-07 13:39:03
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -496,7 +496,7 @@ int main(int argc, char** argv)
 
     int ret;
     ret = post_send(&_ctx, IBV_WR_RDMA_WRITE);
-    printf("post_send = %d\n", ret);
+    printf("post_send [%d] = %d\n", IBV_WR_RDMA_WRITE, ret);
 
 #if 0
     int tmp;
