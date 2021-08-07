@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-08-07 13:43:22
+ * @LastEditTime: 2021-08-07 15:23:01
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -178,6 +178,7 @@ static void create_qpair(rdma_context_t* context)
             exit(1);
         }
         printf("|--ibv_create_qp ok.[%d/%d]\n", i, context->num_qps);
+        printf("|--[qp_num:%d]\n", context->qp[i]->qp_num);
     }
 }
 
