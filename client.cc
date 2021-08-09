@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-08-09 17:19:02
+ * @LastEditTime: 2021-08-09 17:24:20
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -488,6 +488,7 @@ static void poll_cq(rdma_context_t* context)
             printf("|Completion was found in CQ with error status [%s][%d]\n", ibv_wc_status_str(wc.status), n);
             printf("|-[wr_id:%d][status:%d][opcode:%d]\n", wc.wr_id, wc.status, wc.opcode);
             printf("|-[byte_len:%d][qp_num:%d][src_qp:%d]\n", wc.byte_len, wc.qp_num, wc.src_qp);
+            break;
         }
     }
 }
@@ -506,8 +507,6 @@ int main(int argc, char** argv)
     for (int i = 0; i < 16; i++) {
         ret = post_send(&_ctx, IBV_WR_RDMA_WRITE);
         printf("post_send [%d] = %d\n", IBV_WR_RDMA_WRITE, ret);
-    }
-
 #if 0
     int tmp;
     printf("[addr:%llx][data:%llx]\n", (uint64_t*)_ctx.local_qp->addr, *(uint64_t*)_ctx.local_qp->addr);
@@ -528,6 +527,7 @@ int main(int argc, char** argv)
         printf("data = %llu\n", *(uint64_t*)_ctx.remote_qp->addr);
     }
 #endif
-    poll_cq(&_ctx);
+        poll_cq(&_ctx);
+    }
     return 0;
 }
