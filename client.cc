@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-08-07 16:09:47
+ * @LastEditTime: 2021-08-09 17:19:02
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -300,7 +300,7 @@ static int modify_qp_to_rts(struct ibv_qp* qp)
     memset(&attr, 0, sizeof(attr));
 
     attr.qp_state = IBV_QPS_RTS;
-    attr.timeout = 12; // 18
+    attr.timeout = 0x12; // 18
     attr.retry_cnt = 6;
     attr.rnr_retry = 0;
     attr.sq_psn = 0;
@@ -503,8 +503,10 @@ int main(int argc, char** argv)
     connect_qpair(&_ctx);
 
     int ret;
-    ret = post_send(&_ctx, IBV_WR_RDMA_WRITE);
-    printf("post_send [%d] = %d\n", IBV_WR_RDMA_WRITE, ret);
+    for (int i = 0; i < 16; i++) {
+        ret = post_send(&_ctx, IBV_WR_RDMA_WRITE);
+        printf("post_send [%d] = %d\n", IBV_WR_RDMA_WRITE, ret);
+    }
 
 #if 0
     int tmp;
