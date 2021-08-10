@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-08-10 15:34:21
+ * @LastEditTime: 2021-08-10 15:39:28
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -192,7 +192,8 @@ static void register_memory_region(rdma_context_t* context)
         printf("|--memalign failed.\n");
         exit(1);
     } else {
-        printf("|--memalign ok.\n");
+        strcpy(context->ib_buf, "Hello RDMA!");
+        printf("|--memalign ok [%zuB].\n", context->ib_buf_size);
     }
 
     context->mr = ibv_reg_mr(context->pd, (void*)context->ib_buf,

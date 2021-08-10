@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-08-10 15:35:05
+ * @LastEditTime: 2021-08-10 17:08:30
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -169,13 +169,13 @@ static void create_qpair(rdma_context_t* context)
 static void register_memory_region(rdma_context_t* context)
 {
     printf("|register_memory_regio.\n");
-    // 注册一段内存区域的函数
+    // register memory buffer
     context->ib_buf = new char[context->ib_buf_size]; // 申请一段内存
     if (context->ib_buf == NULL) {
         printf("|--memalign failed.\n");
         exit(1);
     } else {
-        printf("|--memalign ok.\n");
+        printf("|--memalign ok [%zuB].\n", context->ib_buf_size);
     }
 
     context->mr = ibv_reg_mr(context->pd, (void*)context->ib_buf,
@@ -195,10 +195,8 @@ static void rdma_init(rdma_context_t* context)
 {
     // 打开设备
     open_device(context);
-
     // 创建QP
     create_qpair(context);
-
     // 注册内存区域
     register_memory_region(context);
 }
@@ -345,7 +343,7 @@ static void connect_qpair(rdma_context_t* context)
     context->local_qp = local_qp_info;
     local_qp_info->addr = (uint64_t)context->ib_buf; // 注册内存的地址
     local_qp_info->rkey = context->mr->rkey; // 注册内存的remote key
-    local_qp_info->qp_num = context->num_qps; // qp个数
+    local_qp_info->qp_num = context->qp->num_qp; // qp number
     local_qp_info->lid = context->port_attr.lid;
     memcpy((void*)(&local_qp_info->gid), (void*)(&context->gid), sizeof(context->gid));
     size_t sz = sock_write(sock_fd, local_qp_info, sizeof(qp_info_t));
