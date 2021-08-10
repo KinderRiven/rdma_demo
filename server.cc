@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-08-10 17:09:25
+ * @LastEditTime: 2021-08-10 17:10:14
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -402,7 +402,7 @@ static void connect_qpair(rdma_context_t* context)
     context->local_qp = local_qp_info;
     local_qp_info->addr = (uint64_t)context->ib_buf;
     local_qp_info->rkey = context->mr->rkey;
-    local_qp_info->qp_num = context->qp->num_qp;
+    local_qp_info->qp_num = context->qp[0]->num_qp; // qp number
     local_qp_info->lid = context->port_attr.lid;
     memcpy((void*)(&local_qp_info->gid), (void*)(&context->gid), sizeof(context->gid));
     sz = sock_write(peer_sockfd, local_qp_info, sizeof(qp_info_t));
