@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-08-10 15:00:52
+ * @LastEditTime: 2021-08-10 15:31:36
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -503,8 +503,8 @@ int main(int argc, char** argv)
     rdma_init(&_ctx);
     connect_qpair(&_ctx);
 
-    syncop(_ctx.sockfd);
-    printf("sync finished!\n");
+    // syncop(_ctx.sockfd);
+    // printf("sync finished!\n");
 
     int ret;
     // printf("input anything to continue:");
@@ -525,6 +525,7 @@ int main(int argc, char** argv)
         }
     }
 #endif
+
 #if 0
     ret = post_receive(&_ctx);
     printf("post_receive = %d\n", ret);
