@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-08-10 17:10:03
+ * @LastEditTime: 2021-08-10 17:12:07
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -343,7 +343,7 @@ static void connect_qpair(rdma_context_t* context)
     context->local_qp = local_qp_info;
     local_qp_info->addr = (uint64_t)context->ib_buf; // 注册内存的地址
     local_qp_info->rkey = context->mr->rkey; // 注册内存的remote key
-    local_qp_info->qp_num = context->qp[0]->num_qp; // qp number
+    local_qp_info->qp_num = context->qp[0]->qp_num; // qp number
     local_qp_info->lid = context->port_attr.lid;
     memcpy((void*)(&local_qp_info->gid), (void*)(&context->gid), sizeof(context->gid));
     size_t sz = sock_write(sock_fd, local_qp_info, sizeof(qp_info_t));
