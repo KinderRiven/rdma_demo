@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-08-10 15:02:17
+ * @LastEditTime: 2021-08-10 15:03:56
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -354,6 +354,7 @@ static void connect_qpair(rdma_context_t* context)
         ret = bind(sock_fd, rp->ai_addr, rp->ai_addrlen);
         if (ret == 0) {
             context->sockfd = sock_fd;
+            printf("|--socket ok[%d].\n", sock_fd);
             break;
         }
         close(sock_fd);
