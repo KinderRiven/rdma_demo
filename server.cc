@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-08-07 16:12:25
+ * @LastEditTime: 2021-08-10 14:48:54
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -520,6 +520,12 @@ int main(int argc, char** argv)
     rdma_init(&_ctx);
     connect_qpair(&_ctx);
 
+    int ret;
+    ret = post_receive(&_ctx);
+    printf("post_receive = %d\n", ret);
+    poll_cq(&_ctx);
+
+#if 0
     int tmp;
     printf("[addr:%llx][data:%llx]\n", (uint64_t*)_ctx.local_qp->addr, *(uint64_t*)_ctx.local_qp->addr);
     while (true) {
@@ -530,6 +536,6 @@ int main(int argc, char** argv)
             break;
         }
     }
-    poll_cq(&_ctx);
+#endif
     return 0;
 }
