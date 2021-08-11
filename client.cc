@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-17 10:56:52
- * @LastEditTime: 2021-08-10 17:12:07
+ * @LastEditTime: 2021-08-11 14:18:13
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /rdma_demo/hello_rdma.cc
@@ -479,19 +479,6 @@ static void poll_cq(rdma_context_t* context)
     }
 }
 
-static bool syncop(int sockfd)
-{
-    char msg = 'a';
-    if (write(sockfd, &msg, 1) != 1) {
-        return false;
-    }
-
-    if (read(sockfd, &msg, 1) != 1) {
-        return false;
-    }
-    return true;
-}
-
 int main(int argc, char** argv)
 {
     rdma_context_t _ctx;
@@ -502,12 +489,8 @@ int main(int argc, char** argv)
     rdma_init(&_ctx);
     connect_qpair(&_ctx);
 
-    // syncop(_ctx.sockfd);
-    // printf("sync finished!\n");
 
     int ret;
-    // printf("input anything to continue:");
-    // scanf("%d", &ret);
     ret = post_send(&_ctx, IBV_WR_RDMA_WRITE);
     printf("post_send [%d] = %d\n", IBV_WR_RDMA_WRITE, ret);
     poll_cq(&_ctx);
